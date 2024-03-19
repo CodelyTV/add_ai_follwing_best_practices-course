@@ -11,6 +11,7 @@ type DatabaseUser = {
 	email: string;
 	profile_picture: string;
 	status: string;
+	interests: string;
 };
 
 export class MySqlUserRepository implements UserRepository {
@@ -20,20 +21,21 @@ export class MySqlUserRepository implements UserRepository {
 		const userPrimitives = user.toPrimitives();
 
 		const query = `
-			INSERT INTO rrss__users (id, name, email, profile_picture, status)
+			INSERT INTO rrss__users (id, name, email, profile_picture, status, interests)
 			VALUES (
 						   '${userPrimitives.id}',
 						   '${userPrimitives.name}',
 						   '${userPrimitives.email}',
 						   '${userPrimitives.profilePicture}',
-						   '${userPrimitives.status.valueOf()}'
+						   '${userPrimitives.status.valueOf()}',
+						   '${userPrimitives.interests.join(",")}'
 				   );`;
 
 		await this.connection.execute(query);
 	}
 
 	async search(id: UserId): Promise<User | null> {
-		const query = `SELECT id, name, email, profile_picture FROM rrss__users WHERE id = '${id.value}';`;
+		const query = `SELECT id, name, email, profile_picture, interests FROM rrss__users WHERE id = '${id.value}';`;
 
 		const result = await this.connection.searchOne<DatabaseUser>(query);
 
@@ -47,6 +49,7 @@ export class MySqlUserRepository implements UserRepository {
 			email: result.email,
 			profilePicture: result.profile_picture,
 			status: result.status,
+			interests: result.status.split(","),
 		});
 	}
 
@@ -58,9 +61,14 @@ export class MySqlUserRepository implements UserRepository {
 		const converter = new CriteriaToSqlConverter();
 
 		const result = await this.connection.searchAll<DatabaseUser>(
-			converter.convert(["id", "name", "email", "profile_picture"], "rrss__users", criteria, {
-				fullname: "name",
-			}),
+			converter.convert(
+				["id", "name", "email", "profile_picture", "interests"],
+				"rrss__users",
+				criteria,
+				{
+					fullname: "name",
+				},
+			),
 		);
 
 		return result.map((user) =>
@@ -70,6 +78,7 @@ export class MySqlUserRepository implements UserRepository {
 				email: user.email,
 				profilePicture: user.profile_picture,
 				status: user.status,
+				interests: user.interests.split(","),
 			}),
 		);
 	}

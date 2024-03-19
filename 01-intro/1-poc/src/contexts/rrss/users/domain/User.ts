@@ -14,6 +14,7 @@ export type UserPrimitives = {
 	email: string;
 	profilePicture: string;
 	status: string;
+	interests: string[];
 };
 
 export class User extends AggregateRoot {
@@ -23,12 +24,14 @@ export class User extends AggregateRoot {
 		public email: UserEmail,
 		public readonly profilePicture: UserProfilePicture,
 		public status: UserStatus,
+		public interests: string[],
 	) {
 		super();
 	}
 
 	static create(id: string, name: string, email: string, profilePicture: string): User {
 		const defaultUserStatus = UserStatus.Active;
+		const defaultInterests: string[] = [];
 
 		const user = new User(
 			new UserId(id),
@@ -36,6 +39,7 @@ export class User extends AggregateRoot {
 			new UserEmail(email),
 			new UserProfilePicture(profilePicture),
 			defaultUserStatus,
+			defaultInterests,
 		);
 
 		user.record(new UserRegisteredDomainEvent(id, name, email, profilePicture, defaultUserStatus));
@@ -50,6 +54,7 @@ export class User extends AggregateRoot {
 			new UserEmail(primitives.email),
 			new UserProfilePicture(primitives.profilePicture),
 			primitives.status as UserStatus,
+			primitives.interests,
 		);
 	}
 
@@ -60,6 +65,7 @@ export class User extends AggregateRoot {
 			email: this.email.value,
 			profilePicture: this.profilePicture.value,
 			status: this.status,
+			interests: this.interests,
 		};
 	}
 
