@@ -49,7 +49,7 @@ export class MySqlUserRepository implements UserRepository {
 			email: result.email,
 			profilePicture: result.profile_picture,
 			status: result.status,
-			interests: result.status.split(","),
+			interests: result.interests.split(","),
 		});
 	}
 
