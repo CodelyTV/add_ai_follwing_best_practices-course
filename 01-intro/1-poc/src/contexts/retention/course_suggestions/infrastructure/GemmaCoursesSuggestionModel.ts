@@ -24,11 +24,13 @@ export class GemmaCoursesSuggestionModel implements CoursesSuggestionModel {
 	];
 
 	async predict(interests: string[]): Promise<CourseSuggestion[]> {
+		console.log("Interests:", interests);
+
 		const generated = await generateObject({
 			model: ollama
 				.CompletionTextGenerator({
 					model: "mistral",
-					temperature: 0.8,
+					temperature: 0,
 				})
 				.asObjectGenerationModel(jsonObjectPrompt.text()),
 
@@ -38,14 +40,16 @@ export class GemmaCoursesSuggestionModel implements CoursesSuggestionModel {
 						z.object({
 							courseName: z.string(),
 							suggestionReason: z.string(),
+							coveredInterests: z.array(z.string()),
 						}),
 					),
 				}),
 			),
 
 			prompt: `
-Based on these interests: ${interests.join(", ")}, suggest up to 3 courses from the following list: ${this.courses.join(", ")}
-and provide a brief reason for each suggestion in Spanish that should includes the interest covered by the course. The reason should start with the word "Porque" (because).
+Given a list of interests: ${interests.map((interest) => `"${interest}"`).join(", ")}, suggest up to 3 courses from the following selection: ${this.courses.map((course) => `"${course}"`).join(", ")}.
+Only suggest courses that align with the provided interests, specifically focusing on programming languages if they are listed among the interests. Avoid recommending courses on topics or languages not included in the interests list. For exemple, don't recommend the course "DDD en PHP" if there is no interest in "PHP" on the provided interest list.
+For each suggestion, include the covered interests by the course. These interests MUST match the ones previously listed. Additionally, provide a brief rationale for each suggestion in Spanish. The reason should start with the word "Porque" (because) to explain the relevance.
 Response format:
 1. Course name - Reason for suggestion.
 2. Course name - Reason for suggestion (if applicable).
@@ -53,11 +57,17 @@ Response format:
 For example, if interests include "observabilidad" and "escalabilidad", a valid response could be:
 "Grafana - Porque Grafana es una de las herramientas de observabilidad más populares que hay.",
 "Diseño de infraestructura: AWS SQS como cola de mensajería - Porque las colas de mensajería con AWS SQSFavorece la escalabilidad."
+Ensure the interests used to justify course recommendations are directly drawn from the provided interests list, preventing the generation of unrelated interests.
 `.trim(),
 		});
 
 		return generated.suggestions.map(
-			(suggestion) => new CourseSuggestion(suggestion.courseName, suggestion.suggestionReason),
+			(suggestion) =>
+				new CourseSuggestion(
+					suggestion.courseName,
+					suggestion.suggestionReason,
+					suggestion.coveredInterests,
+				),
 		);
 	}
 }
