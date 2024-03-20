@@ -43,16 +43,17 @@ export class GemmaCoursesSuggestionModel implements CoursesSuggestionModel {
 				}),
 			),
 
-			prompt:
-				`Based on these interests: ${interests.join(", ")}, suggest up to 3 courses from the following list: ${this.courses.join(", ")} ` +
-				`and provide a brief reason for each suggestion in Spanish. ` +
-				`Response format: ` +
-				`1. Course name - Reason for suggestion. ` +
-				`2. Course name - Reason for suggestion (if applicable). ` +
-				`3. Course name - Reason for suggestion (if applicable). ` +
-				`For example, if interests include "observability" and "scalability", a valid response could be: ` +
-				`"Grafana - Grafana es una de las herramientas de observabilidad más populares que hay.", ` +
-				`"Diseño de infraestructura: AWS SQS como cola de mensajería - Favorece la escalabilidad mediante el desacoplamiento de componentes."`,
+			prompt: `
+Based on these interests: ${interests.join(", ")}, suggest up to 3 courses from the following list: ${this.courses.join(", ")}
+and provide a brief reason for each suggestion in Spanish that should includes the interest covered by the course. The reason should start with the word "Porque" (because).
+Response format:
+1. Course name - Reason for suggestion.
+2. Course name - Reason for suggestion (if applicable).
+3. Course name - Reason for suggestion (if applicable).
+For example, if interests include "observabilidad" and "escalabilidad", a valid response could be:
+"Grafana - Porque Grafana es una de las herramientas de observabilidad más populares que hay.",
+"Diseño de infraestructura: AWS SQS como cola de mensajería - Porque las colas de mensajería con AWS SQSFavorece la escalabilidad."
+`.trim(),
 		});
 
 		return generated.suggestions.map(
