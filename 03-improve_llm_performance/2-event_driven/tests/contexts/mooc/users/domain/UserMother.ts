@@ -12,6 +12,8 @@ export class UserMother {
 			name: UserNameMother.create().value,
 			email: UserEmailMother.create().value,
 			profilePicture: UserProfilePictureMother.create().value,
+			finishedCourses: [],
+			recommendedCourses: "",
 			status: UserStatus.Active,
 			...params,
 		};

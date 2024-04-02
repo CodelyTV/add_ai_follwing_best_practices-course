@@ -1,11 +1,17 @@
 import { DomainEvent, DomainEventAttributes } from "../../shared/domain/event/DomainEvent";
 
+export type CourseProgressFinishedDomainEventPrimitives = {
+	id: string;
+	courseName: string;
+	userId: string;
+};
+
 export class CourseProgressFinishedDomainEvent extends DomainEvent {
 	static eventName = "codely.mooc.course_progress.finished";
 
 	constructor(
 		public readonly id: string,
-		public readonly name: string,
+		public readonly courseName: string,
 		public readonly userId: string,
 		eventId?: string,
 		occurredOn?: Date,
@@ -21,17 +27,17 @@ export class CourseProgressFinishedDomainEvent extends DomainEvent {
 	): CourseProgressFinishedDomainEvent {
 		return new CourseProgressFinishedDomainEvent(
 			aggregateId,
-			attributes.name as string,
+			attributes.courseName as string,
 			attributes.userId as string,
 			eventId,
 			occurredOn,
 		);
 	}
 
-	toPrimitives(): DomainEventAttributes {
+	toPrimitives(): CourseProgressFinishedDomainEventPrimitives {
 		return {
 			id: this.id,
-			name: this.name,
+			courseName: this.courseName,
 			userId: this.userId,
 		};
 	}
