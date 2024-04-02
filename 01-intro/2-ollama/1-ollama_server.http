@@ -20,7 +20,6 @@ POST http://localhost:11434/api/generate
 	"stream": false
 }
 
-
 ### Chat with a model in streaming
 POST http://localhost:11434/api/generate
 
