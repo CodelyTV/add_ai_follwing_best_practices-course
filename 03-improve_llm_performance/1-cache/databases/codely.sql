@@ -8,5 +8,6 @@ CREATE TABLE mooc__users (
 	email VARCHAR(255),
 	profile_picture VARCHAR(255),
 	status VARCHAR(255),
-	finished_courses TEXT
+	finished_courses TEXT,
+	recommended_courses TEXT
 );
