@@ -72,4 +72,12 @@ export class User extends AggregateRoot {
 			recommendedCourses: this.recommendedCourses,
 		};
 	}
+
+	finishCourse(courseName: string): void {
+		this.finishedCourses.push(courseName);
+	}
+
+	updateRecommendedCourses(recommendedCourses: string): void {
+		this.recommendedCourses = recommendedCourses;
+	}
 }
