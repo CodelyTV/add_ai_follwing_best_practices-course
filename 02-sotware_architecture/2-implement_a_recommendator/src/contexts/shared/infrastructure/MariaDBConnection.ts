@@ -14,7 +14,7 @@ export class MariaDBConnection {
 				host: "localhost",
 				user: "codely",
 				password: "c0d3ly7v",
-				database: "ecommerce",
+				database: "mooc",
 			});
 		}
 

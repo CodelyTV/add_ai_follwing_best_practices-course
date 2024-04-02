@@ -1,5 +1,5 @@
-import { PostPublishedDomainEvent } from "../../../../rrss/posts/domain/PostPublishedDomainEvent";
-import { UserDomainEvent } from "../../../../rrss/users/domain/UserDomainEvent";
+import { PostPublishedDomainEvent } from "../../../../mooc/posts/domain/PostPublishedDomainEvent";
+import { UserDomainEvent } from "../../../../mooc/users/domain/UserDomainEvent";
 import { DomainEventClass } from "../../../../shared/domain/event/DomainEventClass";
 import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEventSubscriber";
 import { RetentionUserTotalPostsIncrementer } from "./RetentionUserTotalPostsIncrementer";

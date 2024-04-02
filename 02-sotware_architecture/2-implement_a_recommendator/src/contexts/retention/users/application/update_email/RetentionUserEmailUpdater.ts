@@ -1,4 +1,4 @@
-import { UserId } from "../../../../rrss/users/domain/UserId";
+import { UserId } from "../../../../mooc/users/domain/UserId";
 import { RetentionUserDoesNotExist } from "../../domain/RetentionUserDoesNotExist";
 import { RetentionUserRepository } from "../../domain/RetentionUserRepository";
 

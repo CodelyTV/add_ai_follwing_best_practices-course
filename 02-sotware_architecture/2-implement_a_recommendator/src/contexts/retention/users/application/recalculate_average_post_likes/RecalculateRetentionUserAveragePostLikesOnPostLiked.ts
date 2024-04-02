@@ -1,5 +1,5 @@
-import { PostLikedDomainEvent } from "../../../../rrss/post_likes/domain/PostLikedDomainEvent";
-import { UserDomainEvent } from "../../../../rrss/users/domain/UserDomainEvent";
+import { PostLikedDomainEvent } from "../../../../mooc/post_likes/domain/PostLikedDomainEvent";
+import { UserDomainEvent } from "../../../../mooc/users/domain/UserDomainEvent";
 import { DomainEventClass } from "../../../../shared/domain/event/DomainEventClass";
 import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEventSubscriber";
 import { RetentionUserAveragePostLikesRecalculator } from "./RetentionUserAveragePostLikesRecalculator";

@@ -4,7 +4,7 @@ import {
 	RetentionUser,
 	RetentionUserPrimitives,
 } from "../../../../../src/contexts/retention/users/domain/RetentionUser";
-import { UserIdMother } from "../../../rrss/users/domain/UserIdMother";
+import { UserIdMother } from "../../../mooc/users/domain/UserIdMother";
 
 export class RetentionUserMother {
 	static create(params?: Partial<RetentionUserPrimitives>): RetentionUser {

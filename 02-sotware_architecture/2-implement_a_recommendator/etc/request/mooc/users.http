@@ -1,0 +1,2 @@
+### Filtering by one field
+GET http://localhost:3000/api/mooc/users/efc891f8-3c87-40ac-82c4-2a4fe2baabfd

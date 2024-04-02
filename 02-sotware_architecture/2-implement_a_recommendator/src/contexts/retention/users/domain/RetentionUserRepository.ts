@@ -1,4 +1,4 @@
-import { UserId } from "../../../rrss/users/domain/UserId";
+import { UserId } from "../../../mooc/users/domain/UserId";
 import { RetentionUser } from "./RetentionUser";
 
 export abstract class RetentionUserRepository {

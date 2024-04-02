@@ -1,6 +1,6 @@
+import { UserId } from "../../../../../src/contexts/mooc/users/domain/UserId";
 import { RetentionUser } from "../../../../../src/contexts/retention/users/domain/RetentionUser";
 import { RetentionUserRepository } from "../../../../../src/contexts/retention/users/domain/RetentionUserRepository";
-import { UserId } from "../../../../../src/contexts/rrss/users/domain/UserId";
 
 export class MockRetentionUserRepository implements RetentionUserRepository {
 	private readonly mockSave = jest.fn();

@@ -1,5 +1,5 @@
-import { UserDomainEvent } from "../../../../rrss/users/domain/UserDomainEvent";
-import { UserRegisteredDomainEvent } from "../../../../rrss/users/domain/UserRegisteredDomainEvent";
+import { UserDomainEvent } from "../../../../mooc/users/domain/UserDomainEvent";
+import { UserRegisteredDomainEvent } from "../../../../mooc/users/domain/UserRegisteredDomainEvent";
 import { DomainEventClass } from "../../../../shared/domain/event/DomainEventClass";
 import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEventSubscriber";
 import { RetentionUserCreator } from "./RetentionUserCreator";

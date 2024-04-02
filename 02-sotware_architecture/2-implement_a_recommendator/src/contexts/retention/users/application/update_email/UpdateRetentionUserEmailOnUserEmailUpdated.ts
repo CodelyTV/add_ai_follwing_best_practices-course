@@ -1,5 +1,5 @@
-import { UserDomainEvent } from "../../../../rrss/users/domain/UserDomainEvent";
-import { UserEmailUpdatedDomainEvent } from "../../../../rrss/users/domain/UserEmailUpdatedDomainEvent";
+import { UserDomainEvent } from "../../../../mooc/users/domain/UserDomainEvent";
+import { UserEmailUpdatedDomainEvent } from "../../../../mooc/users/domain/UserEmailUpdatedDomainEvent";
 import { DomainEventClass } from "../../../../shared/domain/event/DomainEventClass";
 import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEventSubscriber";
 import { RetentionUserEmailUpdater } from "./RetentionUserEmailUpdater";
