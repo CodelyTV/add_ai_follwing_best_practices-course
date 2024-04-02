@@ -1,10 +1,10 @@
 import { generateObject, jsonObjectPrompt, ollama, zodSchema } from "modelfusion";
 import { z } from "zod";
 
-import { CoursesSuggestionModel } from "../domain/CoursesSuggestionModel";
+import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
 import { CourseSuggestion } from "../domain/CourseSuggestion";
 
-export class GemmaCoursesSuggestionModel implements CoursesSuggestionModel {
+export class GemmaCoursesSuggestionLlm implements CoursesSuggestionLlm {
 	private readonly courses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
