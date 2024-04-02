@@ -10,33 +10,36 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 	const prompt = searchParams.get("prompt") ?? "";
 
-	const parser = StructuredOutputParser.fromZodSchema(
-		z.object({
-			respuesta: z.string().describe("Response a la pregunta formulada."),
-			fuentes: z
-				.array(z.string())
-				.describe("Fuentes para responder a la pregunta, urls a páginas web."),
-		}),
-	);
-
-	const ollama = new Ollama({
-		model: "mistral",
-		temperature: 1,
-	});
-
 	const chain = RunnableSequence.from([
 		PromptTemplate.fromTemplate(
 			`Responde la siguiente pregunta lo mejor posible en castellano:\n{format_instructions}\n{pregunta}`,
 		),
-		ollama,
-		parser,
+		new Ollama({
+			model: "mistral",
+			temperature: 1,
+		}),
+		StructuredOutputParser.fromZodSchema(
+			z.object({
+				respuesta: z.string().describe("Response a la pregunta formulada."),
+				fuentes: z
+					.array(z.string())
+					.describe("Fuentes para responder a la pregunta, urls a páginas web."),
+			}),
+		),
 	]);
 
 	// console.log(parser.getFormatInstructions());
 
 	const response = await chain.invoke({
 		pregunta: prompt,
-		format_instructions: parser.getFormatInstructions(),
+		format_instructions: StructuredOutputParser.fromZodSchema(
+			z.object({
+				respuesta: z.string().describe("Response a la pregunta formulada."),
+				fuentes: z
+					.array(z.string())
+					.describe("Fuentes para responder a la pregunta, urls a páginas web."),
+			}),
+		).getFormatInstructions(),
 	});
 
 	return NextResponse.json({ ...response });
