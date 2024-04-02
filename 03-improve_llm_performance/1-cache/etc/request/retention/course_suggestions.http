@@ -1,0 +1,2 @@
+### Filtering by one field
+GET http://localhost:3000/api/retention/course_suggestions/7e54a4ce-1abd-4db1-b0d2-ee6178f98df0
