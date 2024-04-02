@@ -28,7 +28,7 @@ export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
 		console.log("Finished courses:", finishedCourses);
 
 		const chain = RunnableSequence.from([
-			PromptTemplate.fromTemplate(`${finishedCourses.map((course) => `* ${course}`).join("\n")}`),
+			PromptTemplate.fromTemplate(`{finishedCourses}`),
 			SystemMessagePromptTemplate.fromTemplate(
 				`* Actúas como un recomendador de cursos avanzado.
                  * Solo debes sugerir cursos de la siguiente lista (IMPORTANTE: no incluyas cursos que no estén en la lista):
@@ -37,13 +37,18 @@ export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
                  * Mantén la respuesta centrada en la recomendación, sin añadir agradecimientos o comentarios adicionales.
                  * Asegúrate de que los cursos recomendados sean relevantes para el progreso del usuario, basándote en los cursos que ya ha completado.
                  * Los cursos que ya ha completado el usuario son los que te proveerá.
+                 * Devuelve los cursos en castellano.
+                 * No puedes añadir cursos que el usuario ya ha completado.
                  * Devuelve sólo los nombres de los cursos, sin añadir información adicional.`,
 			),
 			new Ollama({
 				model: "mistral",
+				temperature: 0,
 			}),
 		]);
 
-		return await chain.invoke({});
+		return await chain.invoke({
+			finishedCourses: finishedCourses.map((course) => `* ${course}`).join("\n"),
+		});
 	}
 }
