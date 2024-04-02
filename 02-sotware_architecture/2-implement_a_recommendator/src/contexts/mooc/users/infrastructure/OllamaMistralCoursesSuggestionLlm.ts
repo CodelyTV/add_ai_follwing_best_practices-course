@@ -28,26 +28,22 @@ export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
 		console.log("Finished courses:", finishedCourses);
 
 		const chain = RunnableSequence.from([
-			PromptTemplate.fromTemplate(
-				`Sugiere 3 cursos en base a la oferta de cursos que tenemos:
-				${this.courses.map((course) => `* ${course}`).join("\n")}
-				
-				Dado que actualmente el usuario ha finalizado los siguientes cursos:
-				${finishedCourses.map((course) => `* ${course}`).join("\n")}
-				`,
-			),
+			PromptTemplate.fromTemplate(`${finishedCourses.map((course) => `* ${course}`).join("\n")}`),
 			SystemMessagePromptTemplate.fromTemplate(
-				`* Eres un recomendador de cursos.
-				 * En tu respuesta SOLO devuelves el listado de cursos que recomiendas en formato lista de markdown.
-				 * Sólo sugieres cursos en base a la oferta de cursos que tenemos.
-				 * No das las gracias ni dices nada más extra, sólo devuelves el listado de cursos.
-				 * El nombre de los cursos es en castellano.`,
+				`* Actúas como un recomendador de cursos avanzado.
+                 * Solo debes sugerir cursos de la siguiente lista (IMPORTANTE: no incluyas cursos que no estén en la lista):
+                 ${this.courses.map((course) => `\t- ${course}`).join("\n")}
+                 * Devuelve únicamente el listado de los 3 cursos recomendados, utilizando formato de lista en markdown.
+                 * Mantén la respuesta centrada en la recomendación, sin añadir agradecimientos o comentarios adicionales.
+                 * Asegúrate de que los cursos recomendados sean relevantes para el progreso del usuario, basándote en los cursos que ya ha completado.
+                 * Los cursos que ya ha completado el usuario son los que te proveerá.
+                 * Devuelve sólo los nombres de los cursos, sin añadir información adicional.`,
 			),
 			new Ollama({
 				model: "mistral",
 			}),
 		]);
 
-		return await chain.invoke({ query: "prompt" });
+		return await chain.invoke({});
 	}
 }
