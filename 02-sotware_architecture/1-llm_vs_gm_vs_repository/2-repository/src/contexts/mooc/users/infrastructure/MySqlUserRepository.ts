@@ -1,4 +1,5 @@
 import { MariaDBConnection } from "../../../shared/infrastructure/MariaDBConnection";
+import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
 import { User } from "../domain/User";
 import { UserId } from "../domain/UserId";
 import { UserRepository } from "../domain/UserRepository";
@@ -13,7 +14,10 @@ type DatabaseUser = {
 };
 
 export class MySqlUserRepository implements UserRepository {
-	constructor(private readonly connection: MariaDBConnection) {}
+	constructor(
+		private readonly connection: MariaDBConnection,
+		private readonly coursesSuggestionLlm: CoursesSuggestionLlm,
+	) {}
 
 	async save(user: User): Promise<void> {
 		const userPrimitives = user.toPrimitives();
@@ -46,6 +50,8 @@ export class MySqlUserRepository implements UserRepository {
 		}
 
 		const finishedCourses = JSON.parse(result.finished_courses) as string[];
+		const recommendedCourses =
+			finishedCourses.length > 0 ? await this.coursesSuggestionLlm.predict(finishedCourses) : "";
 
 		return User.fromPrimitives({
 			id: result.id,
@@ -54,7 +60,7 @@ export class MySqlUserRepository implements UserRepository {
 			profilePicture: result.profile_picture,
 			status: result.status,
 			finishedCourses,
-			recommendedCourses: "",
+			recommendedCourses,
 		});
 	}
 }

@@ -72,8 +72,4 @@ export class User extends AggregateRoot {
 			recommendedCourses: this.recommendedCourses,
 		};
 	}
-
-	updateRecommendedCourses(recommendations: string): void {
-		this.recommendedCourses = recommendations;
-	}
 }
