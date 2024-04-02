@@ -1,10 +1,13 @@
-import { generateObject, jsonObjectPrompt, ollama, zodSchema } from "modelfusion";
+import { Ollama } from "@langchain/community/dist/llms/ollama";
+import { StructuredOutputParser } from "@langchain/core/output_parsers";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { RunnableSequence } from "@langchain/core/runnables";
 import { z } from "zod";
 
 import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
 import { CourseSuggestion } from "../domain/CourseSuggestion";
 
-export class GemmaCoursesSuggestionLlm implements CoursesSuggestionLlm {
+export class OllamaLangChainCoursesSuggestionLlm implements CoursesSuggestionLlm {
 	private readonly courses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
@@ -26,26 +29,23 @@ export class GemmaCoursesSuggestionLlm implements CoursesSuggestionLlm {
 	async predict(interests: string[]): Promise<CourseSuggestion[]> {
 		console.log("Interests:", interests);
 
-		const generated = await generateObject({
-			model: ollama
-				.CompletionTextGenerator({
-					model: "gemma:2b",
-					temperature: 0.5,
-				})
-				.asObjectGenerationModel(jsonObjectPrompt.text()),
-
-			schema: zodSchema(
-				z.object({
-					suggestions: z.array(
+		const parser = StructuredOutputParser.fromZodSchema(
+			z.object({
+				suggestions: z
+					.array(
 						z.object({
-							courseName: z.string(),
-							coveredInterests: z.array(z.string()),
-							suggestionReason: z.string(),
+							courseName: z.string().describe("Name of the course"),
+							coveredInterests: z.array(z.string()).describe("Interests covered by the course"),
+							suggestionReason: z.string().describe("Reason for suggesting the course"),
 						}),
-					),
-				}),
-			),
-			prompt: `
+					)
+					.describe("List of course suggestions"),
+			}),
+		);
+
+		const chain = RunnableSequence.from([
+			PromptTemplate.fromTemplate(
+				`
 Given a list of interests: ${interests.map((interest) => `"${interest}"`).join(", ")}, suggest up to 3 courses from the following selection: ${this.courses.map((course) => `"${course}"`).join(", ")}.
 Only suggest courses that align with the provided interests, specifically focusing on programming languages if they are listed among the interests. Avoid recommending courses on topics or languages not included in the interests list. For exemple, don't recommend the course "DDD en PHP" if there is no interest in "PHP" on the provided interest list.
 For each suggestion, include the covered interests by the course. These interests MUST match the ones previously listed. Additionally, provide a brief rationale for each suggestion in Spanish. The reason should start with the word "Porque" (because) to explain the relevance.
@@ -58,7 +58,17 @@ For example, if interests include "observabilidad" and "escalabilidad", a valid 
 "Diseño de infraestructura: AWS SQS como cola de mensajería - Porque las colas de mensajería con AWS SQSFavorece la escalabilidad."
 Ensure the interests used to justify course recommendations are directly drawn from the provided interests list, preventing the generation of unrelated interests.
 `.trim(),
-		});
+			),
+			new Ollama({
+				model: "gemma:2b",
+				temperature: 0,
+			}),
+			parser,
+		]);
+
+		const generated = parser.getFormatInstructions();
+
+		console.log(generated);
 
 		return generated.suggestions.map(
 			(suggestion) =>

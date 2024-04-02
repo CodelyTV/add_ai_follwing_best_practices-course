@@ -10,6 +10,7 @@
     "tests": "jest"
   },
   "dependencies": {
+    "@langchain/community": "^0.0.43",
     "mariadb": "^3.2.3",
     "modelfusion": "^0.137.0",
     "next": "14.0.4",

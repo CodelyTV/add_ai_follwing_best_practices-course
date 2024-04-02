@@ -2,14 +2,14 @@ import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { NextResponse } from "next/server";
 
 import { CourseSuggestionsPredictor } from "../../../../../contexts/retention/course_suggestions/application/generate/CourseSuggestionsPredictor";
-import { GemmaCoursesSuggestionLlm } from "../../../../../contexts/retention/course_suggestions/infrastructure/GemmaCoursesSuggestionLlm";
+import { OllamaModelFusionCoursesSuggestionLlm } from "../../../../../contexts/retention/course_suggestions/infrastructure/OllamaModelFusionCoursesSuggestionLlm";
 import { UserFinder } from "../../../../../contexts/rrss/users/application/find/UserFinder";
 import { MySqlUserRepository } from "../../../../../contexts/rrss/users/infrastructure/MySqlUserRepository";
 import { MariaDBConnection } from "../../../../../contexts/shared/infrastructure/MariaDBConnection";
 
 const predictor = new CourseSuggestionsPredictor(
 	new UserFinder(new MySqlUserRepository(new MariaDBConnection())),
-	new GemmaCoursesSuggestionLlm(),
+	new OllamaModelFusionCoursesSuggestionLlm(),
 );
 
 export async function GET(_request: Request, context: { params: Params }): Promise<NextResponse> {
