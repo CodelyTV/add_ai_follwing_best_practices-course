@@ -15,13 +15,15 @@ export class UserCourseSuggestionsGenerator {
 		const userCourseSuggestions =
 			(await this.repository.search(new UserId(userId))) ?? UserCourseSuggestions.create(userId);
 
-		userCourseSuggestions.addCompletedCourse(courseName);
+		if (!userCourseSuggestions.hasCompleted(courseName)) {
+			userCourseSuggestions.addCompletedCourse(courseName);
 
-		const suggestions = await this.generator.generate(userCourseSuggestions);
+			const suggestions = await this.generator.generate(userCourseSuggestions);
 
-		userCourseSuggestions.updateSuggestions(suggestions);
+			userCourseSuggestions.updateSuggestions(suggestions);
 
-		await this.repository.save(userCourseSuggestions);
-		await this.eventBus.publish(userCourseSuggestions.pullDomainEvents());
+			await this.repository.save(userCourseSuggestions);
+			await this.eventBus.publish(userCourseSuggestions.pullDomainEvents());
+		}
 	}
 }

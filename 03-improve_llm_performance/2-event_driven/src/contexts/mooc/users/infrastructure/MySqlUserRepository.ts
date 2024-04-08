@@ -19,13 +19,14 @@ export class MySqlUserRepository implements UserRepository {
 		const userPrimitives = user.toPrimitives();
 
 		const query = `
-			INSERT INTO mooc__users (id, name, email, profile_picture, status, finished_courses)
+			INSERT INTO mooc__users (id, name, email, profile_picture, status, suggested_courses)
 			VALUES (
 				'${userPrimitives.id}',
 				'${userPrimitives.name}',
 				'${userPrimitives.email}',
 				'${userPrimitives.profilePicture}',
-				'${userPrimitives.status.valueOf()}'
+				'${userPrimitives.status.valueOf()}',
+				'${userPrimitives.suggestedCourses}'
 			)
 			ON DUPLICATE KEY UPDATE
 				name = VALUES(name),
@@ -57,7 +58,7 @@ export class MySqlUserRepository implements UserRepository {
 			email: result.email,
 			profilePicture: result.profile_picture,
 			status: result.status,
-			suggestedCourses: result.status,
+			suggestedCourses: result.suggested_courses,
 		});
 	}
 }

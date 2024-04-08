@@ -45,4 +45,8 @@ export class UserCourseSuggestions extends AggregateRoot {
 			suggestions: this.suggestions,
 		};
 	}
+
+	hasCompleted(courseName: string): boolean {
+		return this.completedCourses.includes(courseName);
+	}
 }

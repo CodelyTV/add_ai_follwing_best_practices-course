@@ -1,7 +1,7 @@
 import { UserFinder } from "../../domain/UserFinder";
 import { UserRepository } from "../../domain/UserRepository";
 
-export class UserCourseSuggestionsGenerator {
+export class UserCourseSuggestionsUpdater {
 	constructor(
 		private readonly finder: UserFinder,
 		private readonly repository: UserRepository,

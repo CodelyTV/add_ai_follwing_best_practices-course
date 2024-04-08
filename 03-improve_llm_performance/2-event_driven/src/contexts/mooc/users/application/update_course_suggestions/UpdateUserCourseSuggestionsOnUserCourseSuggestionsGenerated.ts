@@ -1,15 +1,15 @@
 import { DomainEventClass } from "../../../../shared/domain/event/DomainEventClass";
 import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEventSubscriber";
 import { UserCourseSuggestionsGenerated } from "../../../user_course_suggestions/domain/UserCourseSuggestionsGenerated";
-import { UserCourseSuggestionsGenerator } from "./UserCourseSuggestionsGenerator";
+import { UserCourseSuggestionsUpdater } from "./UserCourseSuggestionsUpdater";
 
 export class UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated
 	implements DomainEventSubscriber<UserCourseSuggestionsGenerated>
 {
-	constructor(private readonly generator: UserCourseSuggestionsGenerator) {}
+	constructor(private readonly updater: UserCourseSuggestionsUpdater) {}
 
 	async on(event: UserCourseSuggestionsGenerated): Promise<void> {
-		await this.generator.update(event.userId, event.suggestions);
+		await this.updater.update(event.userId, event.suggestions);
 	}
 
 	subscribedTo(): DomainEventClass[] {

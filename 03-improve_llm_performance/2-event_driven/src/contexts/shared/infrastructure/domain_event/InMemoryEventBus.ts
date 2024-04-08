@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/ban-types,no-console */
 import { DomainEvent } from "../../domain/event/DomainEvent";
 import { DomainEventSubscriber } from "../../domain/event/DomainEventSubscriber";
 import { EventBus } from "../../domain/event/EventBus";
 
 export class InMemoryEventBus implements EventBus {
-	private readonly subscriptions: Map<string, Function[]> = new Map();
+	private readonly subscriptions: Map<string, { subscriber: Function; name: string }[]> = new Map();
 
 	constructor(subscribers: DomainEventSubscriber<DomainEvent>[]) {
 		this.registerSubscribers(subscribers);
@@ -14,11 +14,14 @@ export class InMemoryEventBus implements EventBus {
 		const executions: unknown[] = [];
 
 		events.forEach((event) => {
+			console.log(`\n📤 ${event.eventName}`);
 			const subscribers = this.subscriptions.get(event.eventName);
 
 			if (subscribers) {
 				subscribers.forEach((subscriber) => {
-					executions.push(subscriber(event));
+					console.log(`  → 💻 ${subscriber.name}`);
+
+					executions.push(subscriber.subscriber(event));
 				});
 			}
 		});
@@ -38,7 +41,7 @@ export class InMemoryEventBus implements EventBus {
 
 	private subscribe(eventName: string, subscriber: DomainEventSubscriber<DomainEvent>): void {
 		const currentSubscriptions = this.subscriptions.get(eventName);
-		const subscription = subscriber.on.bind(subscriber);
+		const subscription = { subscriber: subscriber.on.bind(subscriber), name: subscriber.name() };
 
 		if (currentSubscriptions) {
 			currentSubscriptions.push(subscription);
