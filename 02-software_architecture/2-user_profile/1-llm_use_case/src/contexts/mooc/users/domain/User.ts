@@ -76,4 +76,8 @@ export class User extends AggregateRoot {
 	updateRecommendedCourses(recommendations: string): void {
 		this.recommendedCourses = recommendations;
 	}
+
+	hasAnyCourseFinished(): boolean {
+		return this.finishedCourses.length > 0;
+	}
 }

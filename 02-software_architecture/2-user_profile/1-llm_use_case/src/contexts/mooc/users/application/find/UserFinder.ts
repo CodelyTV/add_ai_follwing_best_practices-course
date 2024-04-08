@@ -17,7 +17,7 @@ export class UserFinder {
 			throw new UserDoesNotExist(id);
 		}
 
-		if (user.finishedCourses.length > 0) {
+		if (user.hasAnyCourseFinished()) {
 			const recommendations = await this.courseSuggestionsRepository.byFinishedCourses(
 				user.finishedCourses,
 			);
