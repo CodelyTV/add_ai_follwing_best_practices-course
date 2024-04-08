@@ -12,8 +12,7 @@ export type UserPrimitives = {
 	email: string;
 	profilePicture: string;
 	status: string;
-	finishedCourses: string[];
-	suggestedCourses: string;
+	completedCourses: string[];
 };
 
 export class User extends AggregateRoot {
@@ -23,16 +22,14 @@ export class User extends AggregateRoot {
 		public email: UserEmail,
 		public readonly profilePicture: UserProfilePicture,
 		public status: UserStatus,
-		public finishedCourses: string[],
-		public suggestedCourses: string,
+		public completedCourses: string[],
 	) {
 		super();
 	}
 
 	static create(id: string, name: string, email: string, profilePicture: string): User {
 		const defaultUserStatus = UserStatus.Active;
-		const defaultFinishedCourses: string[] = [];
-		const defaultsuggestedCourses: string = "";
+		const defaultcompletedCourses: string[] = [];
 
 		const user = new User(
 			new UserId(id),
@@ -40,8 +37,7 @@ export class User extends AggregateRoot {
 			new UserEmail(email),
 			new UserProfilePicture(profilePicture),
 			defaultUserStatus,
-			defaultFinishedCourses,
-			defaultsuggestedCourses,
+			defaultcompletedCourses,
 		);
 
 		user.record(new UserRegisteredDomainEvent(id, name, email, profilePicture, defaultUserStatus));
@@ -56,8 +52,7 @@ export class User extends AggregateRoot {
 			new UserEmail(primitives.email),
 			new UserProfilePicture(primitives.profilePicture),
 			primitives.status as UserStatus,
-			primitives.finishedCourses,
-			primitives.suggestedCourses,
+			primitives.completedCourses,
 		);
 	}
 
@@ -68,8 +63,11 @@ export class User extends AggregateRoot {
 			email: this.email.value,
 			profilePicture: this.profilePicture.value,
 			status: this.status,
-			finishedCourses: this.finishedCourses,
-			suggestedCourses: this.suggestedCourses,
+			completedCourses: this.completedCourses,
 		};
+	}
+
+	hasCompletedAnyCourse(): boolean {
+		return this.completedCourses.length > 0;
 	}
 }

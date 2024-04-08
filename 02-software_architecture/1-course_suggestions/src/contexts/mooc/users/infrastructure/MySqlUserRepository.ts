@@ -1,5 +1,4 @@
 import { MariaDBConnection } from "../../../shared/infrastructure/MariaDBConnection";
-import { CourseSuggestionsRepository } from "../../course_suggestions/domain/CourseSuggestionsRepository";
 import { User } from "../domain/User";
 import { UserId } from "../domain/UserId";
 import { UserRepository } from "../domain/UserRepository";
@@ -10,27 +9,24 @@ type DatabaseUser = {
 	email: string;
 	profile_picture: string;
 	status: string;
-	finished_courses: string;
+	completed_courses: string;
 };
 
 export class MySqlUserRepository implements UserRepository {
-	constructor(
-		private readonly connection: MariaDBConnection,
-		private readonly courseSuggestionsRepository: CourseSuggestionsRepository,
-	) {}
+	constructor(private readonly connection: MariaDBConnection) {}
 
 	async save(user: User): Promise<void> {
 		const userPrimitives = user.toPrimitives();
 
 		const query = `
-			INSERT INTO mooc__users (id, name, email, profile_picture, status, finished_courses)
+			INSERT INTO mooc__users (id, name, email, profile_picture, status, completed_courses)
 			VALUES (
 						   '${userPrimitives.id}',
 						   '${userPrimitives.name}',
 						   '${userPrimitives.email}',
 						   '${userPrimitives.profilePicture}',
 						   '${userPrimitives.status.valueOf()}',
-						   '${JSON.stringify(userPrimitives.finishedCourses)}'
+						   '${JSON.stringify(userPrimitives.completedCourses)}'
 				   );`;
 
 		await this.connection.execute(query);
@@ -38,7 +34,7 @@ export class MySqlUserRepository implements UserRepository {
 
 	async search(id: UserId): Promise<User | null> {
 		const query = `
-			SELECT id, name, email, profile_picture, finished_courses
+			SELECT id, name, email, profile_picture, completed_courses
 			FROM mooc__users
 			WHERE id = '${id.value}';
 		`;
@@ -49,10 +45,7 @@ export class MySqlUserRepository implements UserRepository {
 			return null;
 		}
 
-		const finishedCourses = JSON.parse(result.finished_courses) as string[];
-		const suggestedCourses = this.userHasAnyCourseFinished(finishedCourses)
-			? await this.courseSuggestionsRepository.byFinishedCourses(finishedCourses)
-			: "";
+		const completedCourses = JSON.parse(result.completed_courses) as string[];
 
 		return User.fromPrimitives({
 			id: result.id,
@@ -60,12 +53,11 @@ export class MySqlUserRepository implements UserRepository {
 			email: result.email,
 			profilePicture: result.profile_picture,
 			status: result.status,
-			finishedCourses,
-			suggestedCourses,
+			completedCourses,
 		});
 	}
 
-	private userHasAnyCourseFinished(finishedCourses: string[]): boolean {
-		return finishedCourses.length > 0;
+	private userHasAnyCourseFinished(completedCourses: string[]): boolean {
+		return completedCourses.length > 0;
 	}
 }
