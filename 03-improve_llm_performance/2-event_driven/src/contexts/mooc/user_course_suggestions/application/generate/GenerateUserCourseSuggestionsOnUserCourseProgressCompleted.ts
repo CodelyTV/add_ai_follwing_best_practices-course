@@ -3,7 +3,7 @@ import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEve
 import { UserCourseProgressCompletedDomainEvent } from "../../../user_course_progress/domain/UserCourseProgressCompletedDomainEvent";
 import { UserCourseSuggestionsGenerator } from "./UserCourseSuggestionsGenerator";
 
-export class GenerateUserCourseSuggestionsOnCourseProgressCompleted
+export class GenerateUserCourseSuggestionsOnUserCourseProgressCompleted
 	implements DomainEventSubscriber<UserCourseProgressCompletedDomainEvent>
 {
 	constructor(private readonly generator: UserCourseSuggestionsGenerator) {}
@@ -17,6 +17,6 @@ export class GenerateUserCourseSuggestionsOnCourseProgressCompleted
 	}
 
 	name(): string {
-		return "codely.mooc.generate_course_suggestions_on_course_progress_completed";
+		return "codely.mooc.generate_user_course_suggestions_on_user_course_progress_completed";
 	}
 }

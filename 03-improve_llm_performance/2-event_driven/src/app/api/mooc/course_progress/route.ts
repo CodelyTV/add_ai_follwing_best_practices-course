@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { UserCourseProgressCompleter } from "../../../../contexts/mooc/user_course_progress/application/complete/UserCourseProgressCompleter";
-import { GenerateUserCourseSuggestionsOnCourseProgressCompleted } from "../../../../contexts/mooc/user_course_suggestions/application/generate/GenerateUserCourseSuggestionsOnCourseProgressCompleted";
+import { GenerateUserCourseSuggestionsOnUserCourseProgressCompleted } from "../../../../contexts/mooc/user_course_suggestions/application/generate/GenerateUserCourseSuggestionsOnUserCourseProgressCompleted";
 import { UserCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/application/generate/UserCourseSuggestionsGenerator";
 import { MySqlUserCourseSuggestionsRepository } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/MySqlUserCourseSuggestionsRepository";
 import { OllamaMistralCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/OllamaMistralCourseSuggestionsGenerator";
@@ -19,7 +19,7 @@ const userFinder = new UserFinder(mySqlUserRepository);
 
 const completer = new UserCourseProgressCompleter(
 	new InMemoryEventBus([
-		new GenerateUserCourseSuggestionsOnCourseProgressCompleted(
+		new GenerateUserCourseSuggestionsOnUserCourseProgressCompleted(
 			new UserCourseSuggestionsGenerator(
 				new MySqlUserCourseSuggestionsRepository(mariaDBConnection),
 				new OllamaMistralCourseSuggestionsGenerator(),
