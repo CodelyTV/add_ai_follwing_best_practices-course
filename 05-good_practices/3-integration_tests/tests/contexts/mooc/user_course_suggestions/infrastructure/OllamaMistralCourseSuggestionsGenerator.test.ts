@@ -1,19 +1,34 @@
+import { faker } from "@faker-js/faker";
+
+import { CourseSuggestion } from "../../../../../src/contexts/mooc/user_course_suggestions/domain/CourseSuggestion";
 import { OllamaMistralCourseSuggestionsGenerator } from "../../../../../src/contexts/mooc/user_course_suggestions/infrastructure/OllamaMistralCourseSuggestionsGenerator";
-import { CriteriaMother } from "../../../shared/domain/criteria/CriteriaMother";
+import { UserCourseSuggestionsMother } from "../domain/UserCourseSuggestionsMother";
 
 describe("OllamaMistralCourseSuggestionsGenerator should", () => {
 	const generator = new OllamaMistralCourseSuggestionsGenerator();
 
-	it("suggest existing courses", async () => {
-		const user = UserMother.create();
+	let suggestions: CourseSuggestion[];
+	const someExistingCourses = faker.helpers.arrayElements(generator.existingCodelyCourses, 4);
 
-		await repository.save(user);
+	beforeAll(async () => {
+		suggestions = await generator.generate(
+			UserCourseSuggestionsMother.withoutSuggestions(someExistingCourses),
+		);
+	}, 30000);
+
+	it("suggest only 3 courses", () => {
+		expect(suggestions.length).toBe(3);
 	});
 
-	it("suggest meaningful courses", async () => {
-		const userId = UserIdMother.create();
+	it("suggest only existing courses", () => {
+		const suggestedCourseNames = suggestions.map((suggestion) => suggestion.courseName);
 
-		expect(await repository.search(userId)).toBeNull();
+		expect(generator.existingCodelyCourses).toEqual(expect.arrayContaining(suggestedCourseNames));
 	});
 
+	it("suggest only courses that have not been completed", () => {
+		const suggestedCourseNames = suggestions.map((suggestion) => suggestion.courseName);
+
+		expect(someExistingCourses).not.toEqual(expect.arrayContaining(suggestedCourseNames));
+	});
 });

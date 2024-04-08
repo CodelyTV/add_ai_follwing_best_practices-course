@@ -10,7 +10,7 @@ import { CourseSuggestionsGenerator } from "../domain/CourseSuggestionsGenerator
 import { UserCourseSuggestions } from "../domain/UserCourseSuggestions";
 
 export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestionsGenerator {
-	private readonly existingCodelyCourses = [
+	public readonly existingCodelyCourses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
 		"Diseño de infraestructura: RabbitMQ como cola de mensajería",
