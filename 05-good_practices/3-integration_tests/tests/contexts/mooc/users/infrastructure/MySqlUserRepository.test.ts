@@ -1,6 +1,5 @@
 import { MySqlUserRepository } from "../../../../../src/contexts/mooc/users/infrastructure/MySqlUserRepository";
 import { MariaDBConnection } from "../../../../../src/contexts/shared/infrastructure/MariaDBConnection";
-import { CriteriaMother } from "../../../shared/domain/criteria/CriteriaMother";
 import { UserIdMother } from "../domain/UserIdMother";
 import { UserMother } from "../domain/UserMother";
 
@@ -29,19 +28,5 @@ describe("MySqlUserRepository should", () => {
 		await repository.save(user);
 
 		expect(await repository.search(user.id)).toStrictEqual(user);
-	});
-
-	it("return existing user searching by criteria", async () => {
-		const javi = UserMother.create({ name: "Javi" });
-		const rafa = UserMother.create({ name: "Rafa" });
-		const codelyber = UserMother.create({ name: "Codelyber" });
-
-		await repository.save(javi);
-		await repository.save(rafa);
-		await repository.save(codelyber);
-
-		expect(
-			await repository.matching(CriteriaMother.withOneFilter("name", "EQUAL", "Javi")),
-		).toStrictEqual([javi]);
 	});
 });
