@@ -8,6 +8,11 @@ CREATE TABLE mooc__users (
 	email VARCHAR(255),
 	profile_picture VARCHAR(255),
 	status VARCHAR(255),
-	finished_courses TEXT,
+	suggested_courses TEXT
+);
+
+CREATE TABLE mooc__user_course_suggestions (
+	user_id UUID PRIMARY KEY,
+	completed_courses TEXT,
 	suggested_courses TEXT
 );

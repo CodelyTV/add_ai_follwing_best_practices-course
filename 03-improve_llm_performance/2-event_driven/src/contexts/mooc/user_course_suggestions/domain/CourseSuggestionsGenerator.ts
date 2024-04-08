@@ -1,3 +1,5 @@
+import { UserCourseSuggestions } from "./UserCourseSuggestions";
+
 export interface CourseSuggestionsGenerator {
-	generate(courses: string[]): Promise<string>;
+	generate(userCourseSuggestions: UserCourseSuggestions): Promise<string>;
 }

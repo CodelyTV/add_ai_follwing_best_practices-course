@@ -3,10 +3,11 @@ import { Ollama } from "@langchain/community/llms/ollama";
 import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 
-import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
+import { CourseSuggestionsGenerator } from "../domain/CourseSuggestionsGenerator";
+import { UserCourseSuggestions } from "../domain/UserCourseSuggestions";
 
-export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
-	private readonly courses = [
+export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestionsGenerator {
+	private readonly existingCodelyCourses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
 		"Diseño de infraestructura: RabbitMQ como cola de mensajería",
@@ -24,15 +25,13 @@ export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
 		"Crea tu librería en React: Carousel",
 	];
 
-	async predict(finishedCourses: string[]): Promise<string> {
-		console.log("Finished courses:", finishedCourses);
-
+	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<string> {
 		const chain = RunnableSequence.from([
-			PromptTemplate.fromTemplate(`{finishedCourses}`),
+			PromptTemplate.fromTemplate(`{completedCourses}`),
 			SystemMessagePromptTemplate.fromTemplate(
 				`* Actúas como un recomendador de cursos avanzado.
                  * Solo debes sugerir cursos de la siguiente lista (IMPORTANTE: no incluyas cursos que no estén en la lista):
-                 ${this.courses.map((course) => `\t- ${course}`).join("\n")}
+                 ${this.existingCodelyCourses.map((course) => `\t- ${course}`).join("\n")}
                  * Devuelve únicamente el listado de los 3 cursos recomendados, utilizando formato de lista en markdown.
                  * Mantén la respuesta centrada en la recomendación, sin añadir agradecimientos o comentarios adicionales.
                  * Asegúrate de que los cursos recomendados sean relevantes para el progreso del usuario, basándote en los cursos que ya ha completado.
@@ -48,7 +47,9 @@ export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
 		]);
 
 		return await chain.invoke({
-			finishedCourses: finishedCourses.map((course) => `* ${course}`).join("\n"),
+			completedCourses: userCourseSuggestions.completedCourses
+				.map((course) => `* ${course}`)
+				.join("\n"),
 		});
 	}
 }

@@ -1,19 +1,19 @@
 import { DomainEventClass } from "../../../../shared/domain/event/DomainEventClass";
 import { DomainEventSubscriber } from "../../../../shared/domain/event/DomainEventSubscriber";
-import { CourseProgressCompletedDomainEvent } from "../../../courses_progress/domain/CourseProgressCompletedDomainEvent";
+import { UserCourseProgressCompletedDomainEvent } from "../../../user_course_progress/domain/UserCourseProgressCompletedDomainEvent";
 import { UserCourseSuggestionsGenerator } from "./UserCourseSuggestionsGenerator";
 
 export class GenerateUserCourseSuggestionsOnCourseProgressCompleted
-	implements DomainEventSubscriber<CourseProgressCompletedDomainEvent>
+	implements DomainEventSubscriber<UserCourseProgressCompletedDomainEvent>
 {
 	constructor(private readonly generator: UserCourseSuggestionsGenerator) {}
 
-	async on(event: CourseProgressCompletedDomainEvent): Promise<void> {
+	async on(event: UserCourseProgressCompletedDomainEvent): Promise<void> {
 		await this.generator.generate(event.userId, event.courseName);
 	}
 
 	subscribedTo(): DomainEventClass[] {
-		return [CourseProgressCompletedDomainEvent];
+		return [UserCourseProgressCompletedDomainEvent];
 	}
 
 	name(): string {

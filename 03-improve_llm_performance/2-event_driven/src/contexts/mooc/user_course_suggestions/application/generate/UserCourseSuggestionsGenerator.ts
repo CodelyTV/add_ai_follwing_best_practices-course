@@ -1,12 +1,12 @@
 import { EventBus } from "../../../../shared/domain/event/EventBus";
 import { UserId } from "../../../users/domain/UserId";
 import { CourseSuggestionsGenerator } from "../../domain/CourseSuggestionsGenerator";
-import { CourseSuggestionsRepository } from "../../domain/CourseSuggestionsRepository";
 import { UserCourseSuggestions } from "../../domain/UserCourseSuggestions";
+import { UserCourseSuggestionsRepository } from "../../domain/UserCourseSuggestionsRepository";
 
 export class UserCourseSuggestionsGenerator {
 	constructor(
-		private readonly repository: CourseSuggestionsRepository,
+		private readonly repository: UserCourseSuggestionsRepository,
 		private readonly generator: CourseSuggestionsGenerator,
 		private readonly eventBus: EventBus,
 	) {}
@@ -17,7 +17,7 @@ export class UserCourseSuggestionsGenerator {
 
 		userCourseSuggestions.addCompletedCourse(courseName);
 
-		const suggestions = await this.generator.generate(userCourseSuggestions.completedCourses);
+		const suggestions = await this.generator.generate(userCourseSuggestions);
 
 		userCourseSuggestions.updateSuggestions(suggestions);
 
