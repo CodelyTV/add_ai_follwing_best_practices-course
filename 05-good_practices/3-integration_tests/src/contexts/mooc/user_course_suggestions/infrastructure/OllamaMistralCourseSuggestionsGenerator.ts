@@ -5,6 +5,7 @@ import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { z } from "zod";
 
+import { CourseSuggestion } from "../domain/CourseSuggestion";
 import { CourseSuggestionsGenerator } from "../domain/CourseSuggestionsGenerator";
 import { UserCourseSuggestions } from "../domain/UserCourseSuggestions";
 
@@ -27,7 +28,7 @@ export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestion
 		"Crea tu librería en React: Carousel",
 	];
 
-	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<string> {
+	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<CourseSuggestion[]> {
 		const outputParser = StructuredOutputParser.fromZodSchema(
 			z.array(
 				z.object({
@@ -47,7 +48,7 @@ export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestion
                  * Añade también el motivo de la sugerencia (IMPORTANTE: Ha de ser en castellano)
                  * Ejemplo de respuesta de la razón de la sugerencia: "Porque haciendo el curso de DDD en PHP has demostrado interés en PHP".
                  * Devuelve sólo la lista de cursos con sus razones, sin añadir información adicional.
-                 * Siempre respondes utilizando el siguiente JSON Schema:
+                 * Siempre respondes utilizando el siguiente JSON Schema (importante que las claves de "suggestedCourse" y "reason" van entre comillas dobles):
                  {format_instructions}
                  * Los cursos completados por el usuario son:
                  {completed_courses}`,
@@ -66,8 +67,8 @@ export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestion
 			format_instructions: outputParser.getFormatInstructions(),
 		});
 
-		console.log(suggestions);
-
-		return JSON.stringify(suggestions);
+		return suggestions.map(
+			(suggestion) => new CourseSuggestion(suggestion.suggestedCourse, suggestion.reason),
+		);
 	}
 }

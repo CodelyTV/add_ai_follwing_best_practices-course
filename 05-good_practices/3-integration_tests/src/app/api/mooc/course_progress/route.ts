@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { UserCourseProgressCompleter } from "../../../../contexts/mooc/user_course_progress/application/complete/UserCourseProgressCompleter";
 import { GenerateUserCourseSuggestionsOnUserCourseProgressCompleted } from "../../../../contexts/mooc/user_course_suggestions/application/generate/GenerateUserCourseSuggestionsOnUserCourseProgressCompleted";
 import { UserCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/application/generate/UserCourseSuggestionsGenerator";
+import { CourseSuggestionPrimitives } from "../../../../contexts/mooc/user_course_suggestions/domain/CourseSuggestion";
 import { MySqlUserCourseSuggestionsRepository } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/MySqlUserCourseSuggestionsRepository";
 import { OllamaMistralCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/OllamaMistralCourseSuggestionsGenerator";
 import { UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated } from "../../../../contexts/mooc/users/application/update_course_suggestions/UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated";
@@ -42,7 +43,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
 	await completer.complete(courseId, userId, courseName);
 
-	const users = await userFinder.find(userId);
+	const user = await userFinder.find(userId);
 
-	return NextResponse.json(users.toPrimitives());
+	const primitives = user.toPrimitives();
+
+	return NextResponse.json({
+		name: primitives.name,
+		suggestedCourses: JSON.parse(primitives.suggestedCourses) as CourseSuggestionPrimitives[],
+	});
 }
