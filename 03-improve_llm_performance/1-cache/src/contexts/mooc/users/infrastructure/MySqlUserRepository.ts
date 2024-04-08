@@ -1,5 +1,5 @@
 import { MariaDBConnection } from "../../../shared/infrastructure/MariaDBConnection";
-import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
+import { CourseSuggestionsRepository } from "../domain/CourseSuggestionsRepository";
 import { User } from "../domain/User";
 import { UserId } from "../domain/UserId";
 import { UserRepository } from "../domain/UserRepository";
@@ -17,7 +17,7 @@ type DatabaseUser = {
 export class MySqlUserRepository implements UserRepository {
 	constructor(
 		private readonly connection: MariaDBConnection,
-		private readonly coursesSuggestionLlm: CoursesSuggestionLlm,
+		private readonly courseSuggestionsRepository: CourseSuggestionsRepository,
 	) {}
 
 	async save(user: User): Promise<void> {
@@ -54,9 +54,11 @@ export class MySqlUserRepository implements UserRepository {
 
 		const recommendedCourses =
 			result.recommended_courses === null && finishedCourses.length > 0
-				? await this.predictAndSaveRecommendedCourses(id, finishedCourses)
+				? await this.searchAndSaveRecommendedCourses(id, finishedCourses)
 				: result.recommended_courses;
 
+		// Guardar agregado entero y no sólo el campo recommended courses así se valida si
+		// recommended curses guay
 		return User.fromPrimitives({
 			id: result.id,
 			name: result.name,
@@ -68,11 +70,11 @@ export class MySqlUserRepository implements UserRepository {
 		});
 	}
 
-	private async predictAndSaveRecommendedCourses(
+	private async searchAndSaveRecommendedCourses(
 		id: UserId,
 		finishedCourses: string[],
 	): Promise<string> {
-		const recommendedCourses = await this.coursesSuggestionLlm.predict(finishedCourses);
+		const recommendedCourses = await this.courseSuggestionsRepository.search(finishedCourses);
 
 		const query = `UPDATE mooc__users 
                        SET recommended_courses = '${JSON.stringify(recommendedCourses)}'

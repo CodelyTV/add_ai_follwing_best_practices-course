@@ -3,9 +3,9 @@ import { Ollama } from "@langchain/community/llms/ollama";
 import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 
-import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
+import { CourseSuggestionsRepository } from "../domain/CourseSuggestionsRepository";
 
-export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
+export class OllamaMistralCoursesSuggestionRepository implements CourseSuggestionsRepository {
 	private readonly courses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
@@ -24,7 +24,7 @@ export class OllamaMistralCoursesSuggestionLlm implements CoursesSuggestionLlm {
 		"Crea tu librería en React: Carousel",
 	];
 
-	async predict(finishedCourses: string[]): Promise<string> {
+	async search(finishedCourses: string[]): Promise<string> {
 		console.log("Finished courses:", finishedCourses);
 
 		const chain = RunnableSequence.from([
