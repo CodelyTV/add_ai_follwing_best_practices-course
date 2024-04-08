@@ -1,4 +1,4 @@
 export enum UserStatus {
-	Active = "active",
-	Archived = "archived",
+	Active = "ACTIVE",
+	Archived = "ARCHIVED",
 }

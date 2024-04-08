@@ -50,7 +50,7 @@ export class MySqlUserRepository implements UserRepository {
 		}
 
 		const finishedCourses = JSON.parse(result.finished_courses) as string[];
-		const recommendedCourses = this.userHasAnyCourseFinished(finishedCourses)
+		const suggestedCourses = this.userHasAnyCourseFinished(finishedCourses)
 			? await this.courseSuggestionsRepository.byFinishedCourses(finishedCourses)
 			: "";
 
@@ -61,7 +61,7 @@ export class MySqlUserRepository implements UserRepository {
 			profilePicture: result.profile_picture,
 			status: result.status,
 			finishedCourses,
-			recommendedCourses,
+			suggestedCourses,
 		});
 	}
 

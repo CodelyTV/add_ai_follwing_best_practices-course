@@ -5,7 +5,7 @@ import { RunnableSequence } from "@langchain/core/runnables";
 
 import { CourseSuggestionsRepository } from "../domain/CourseSuggestionsRepository";
 
-export class OllamaMistralCoursesSuggestionRepository implements CourseSuggestionsRepository {
+export class OllamaMistralCourseSuggestionsRepository implements CourseSuggestionsRepository {
 	private readonly courses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
@@ -24,7 +24,7 @@ export class OllamaMistralCoursesSuggestionRepository implements CourseSuggestio
 		"Crea tu librería en React: Carousel",
 	];
 
-	async search(finishedCourses: string[]): Promise<string> {
+	async byFinishedCourses(finishedCourses: string[]): Promise<string> {
 		console.log("Finished courses:", finishedCourses);
 
 		const chain = RunnableSequence.from([

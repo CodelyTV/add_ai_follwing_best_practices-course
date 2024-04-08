@@ -9,5 +9,5 @@ CREATE TABLE mooc__users (
 	profile_picture VARCHAR(255),
 	status VARCHAR(255),
 	finished_courses TEXT,
-	recommended_courses TEXT
+	suggested_courses TEXT
 );
