@@ -1,13 +1,13 @@
-import { DomainEvent, DomainEventAttributes } from "../../shared/domain/event/DomainEvent";
+import { DomainEvent, DomainEventAttributes } from "../../../shared/domain/event/DomainEvent";
 
-export type CourseProgressFinishedDomainEventPrimitives = {
+export type CourseProgressCompletedDomainEventPrimitives = {
 	id: string;
 	courseName: string;
 	userId: string;
 };
 
-export class CourseProgressFinishedDomainEvent extends DomainEvent {
-	static eventName = "codely.mooc.course_progress.finished";
+export class CourseProgressCompletedDomainEvent extends DomainEvent {
+	static eventName = "codely.mooc.course_progress.completed";
 
 	constructor(
 		public readonly id: string,
@@ -16,7 +16,7 @@ export class CourseProgressFinishedDomainEvent extends DomainEvent {
 		eventId?: string,
 		occurredOn?: Date,
 	) {
-		super(CourseProgressFinishedDomainEvent.eventName, id, eventId, occurredOn);
+		super(CourseProgressCompletedDomainEvent.eventName, id, eventId, occurredOn);
 	}
 
 	static fromPrimitives(
@@ -24,8 +24,8 @@ export class CourseProgressFinishedDomainEvent extends DomainEvent {
 		eventId: string,
 		occurredOn: Date,
 		attributes: DomainEventAttributes,
-	): CourseProgressFinishedDomainEvent {
-		return new CourseProgressFinishedDomainEvent(
+	): CourseProgressCompletedDomainEvent {
+		return new CourseProgressCompletedDomainEvent(
 			aggregateId,
 			attributes.courseName as string,
 			attributes.userId as string,
@@ -34,7 +34,7 @@ export class CourseProgressFinishedDomainEvent extends DomainEvent {
 		);
 	}
 
-	toPrimitives(): CourseProgressFinishedDomainEventPrimitives {
+	toPrimitives(): CourseProgressCompletedDomainEventPrimitives {
 		return {
 			id: this.id,
 			courseName: this.courseName,

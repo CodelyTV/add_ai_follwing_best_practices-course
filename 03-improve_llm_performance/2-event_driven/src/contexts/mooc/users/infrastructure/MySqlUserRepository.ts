@@ -11,7 +11,7 @@ type DatabaseUser = {
 	profile_picture: string;
 	status: string;
 	finished_courses: string;
-	recommended_courses: null | string;
+	suggested_courses: null | string;
 };
 
 export class MySqlUserRepository implements UserRepository {
@@ -39,7 +39,7 @@ export class MySqlUserRepository implements UserRepository {
 
 	async search(id: UserId): Promise<User | null> {
 		const query = `
-			SELECT id, name, email, profile_picture, finished_courses, recommended_courses
+			SELECT id, name, email, profile_picture, finished_courses, suggested_courses
 			FROM mooc__users
 			WHERE id = '${id.value}';
 		`;
@@ -52,10 +52,10 @@ export class MySqlUserRepository implements UserRepository {
 
 		const finishedCourses = JSON.parse(result.finished_courses) as string[];
 
-		const recommendedCourses =
-			result.recommended_courses === null && finishedCourses.length > 0
-				? await this.predictAndSaveRecommendedCourses(id, finishedCourses)
-				: result.recommended_courses;
+		const suggestedCourses =
+			result.suggested_courses === null && finishedCourses.length > 0
+				? await this.predictAndSavesuggestedCourses(id, finishedCourses)
+				: result.suggested_courses;
 
 		return User.fromPrimitives({
 			id: result.id,
@@ -64,22 +64,22 @@ export class MySqlUserRepository implements UserRepository {
 			profilePicture: result.profile_picture,
 			status: result.status,
 			finishedCourses,
-			recommendedCourses: recommendedCourses ?? "",
+			suggestedCourses: suggestedCourses ?? "",
 		});
 	}
 
-	private async predictAndSaveRecommendedCourses(
+	private async predictAndSavesuggestedCourses(
 		id: UserId,
 		finishedCourses: string[],
 	): Promise<string> {
-		const recommendedCourses = await this.coursesSuggestionLlm.predict(finishedCourses);
+		const suggestedCourses = await this.coursesSuggestionLlm.predict(finishedCourses);
 
 		const query = `UPDATE mooc__users 
-                       SET recommended_courses = '${JSON.stringify(recommendedCourses)}'
+                       SET suggested_courses = '${JSON.stringify(suggestedCourses)}'
                        WHERE id = '${id.value}'`;
 
 		await this.connection.execute(query);
 
-		return recommendedCourses;
+		return suggestedCourses;
 	}
 }

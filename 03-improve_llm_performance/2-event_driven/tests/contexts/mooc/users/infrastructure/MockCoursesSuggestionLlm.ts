@@ -11,8 +11,8 @@ export class MockCoursesSuggestionLlm implements CoursesSuggestionLlm {
 		return this.mockPredict() as Promise<string>;
 	}
 
-	shouldPredict(finishedCourses: string[], recommendedCourses: string): void {
+	shouldPredict(finishedCourses: string[], suggestedCourses: string): void {
 		this.mockPredict(finishedCourses);
-		this.mockPredict.mockReturnValueOnce(recommendedCourses);
+		this.mockPredict.mockReturnValueOnce(suggestedCourses);
 	}
 }

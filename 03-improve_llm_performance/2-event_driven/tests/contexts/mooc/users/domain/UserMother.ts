@@ -13,7 +13,7 @@ export class UserMother {
 			email: UserEmailMother.create().value,
 			profilePicture: UserProfilePictureMother.create().value,
 			finishedCourses: [],
-			recommendedCourses: "",
+			suggestedCourses: "",
 			status: UserStatus.Active,
 			...params,
 		};
