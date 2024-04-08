@@ -1,4 +1,4 @@
-import { CoursesRecommendationLlm } from "../../domain/CoursesRecommendationLlm";
+import { CourseSuggestionsRepository } from "../../../course_suggestions/domain/CourseSuggestionsRepository";
 import { User } from "../../domain/User";
 import { UserDoesNotExist } from "../../domain/UserDoesNotExist";
 import { UserId } from "../../domain/UserId";
@@ -7,7 +7,7 @@ import { UserRepository } from "../../domain/UserRepository";
 export class UserFinder {
 	constructor(
 		private readonly repository: UserRepository,
-		private readonly coursesRecommendationLlm: CoursesRecommendationLlm,
+		private readonly courseSuggestionsRepository: CourseSuggestionsRepository,
 	) {}
 
 	async find(id: string): Promise<User> {
@@ -18,7 +18,9 @@ export class UserFinder {
 		}
 
 		if (user.finishedCourses.length > 0) {
-			const recommendations = await this.coursesRecommendationLlm.predict(user.finishedCourses);
+			const recommendations = await this.courseSuggestionsRepository.byFinishedCourses(
+				user.finishedCourses,
+			);
 
 			user.updateRecommendedCourses(recommendations);
 		}

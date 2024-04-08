@@ -3,11 +3,10 @@ import { NextResponse } from "next/server";
 
 import { UserFinder } from "../../../../../contexts/mooc/users/application/find/UserFinder";
 import { MySqlUserRepository } from "../../../../../contexts/mooc/users/infrastructure/MySqlUserRepository";
-import { OllamaMistralCoursesRecommendationLlm } from "../../../../../contexts/mooc/users/infrastructure/OllamaMistralCoursesRecommendationLlm";
 import { MariaDBConnection } from "../../../../../contexts/shared/infrastructure/MariaDBConnection";
 
 const finder = new UserFinder(
-	new MySqlUserRepository(new MariaDBConnection(), new OllamaMistralCoursesRecommendationLlm()),
+	new MySqlUserRepository(new MariaDBConnection(), new OllamaMistralCoursesSuggestionsRepository(),
 );
 
 export async function GET(_request: Request, context: { params: Params }): Promise<NextResponse> {
