@@ -4,7 +4,7 @@ import { UserCourseProgressCompleter } from "../../../../contexts/mooc/user_cour
 import { GenerateUserCourseSuggestionsOnUserCourseProgressCompleted } from "../../../../contexts/mooc/user_course_suggestions/application/generate/GenerateUserCourseSuggestionsOnUserCourseProgressCompleted";
 import { UserCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/application/generate/UserCourseSuggestionsGenerator";
 import { MySqlUserCourseSuggestionsRepository } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/MySqlUserCourseSuggestionsRepository";
-import { OpenAIChatGPT35CourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/OpenAIChatGPT35CourseSuggestionsGenerator";
+import { OllamaMistralCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/OllamaMistralCourseSuggestionsGenerator";
 import { UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated } from "../../../../contexts/mooc/users/application/update_course_suggestions/UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated";
 import { UserCourseSuggestionsUpdater } from "../../../../contexts/mooc/users/application/update_course_suggestions/UserCourseSuggestionsUpdater";
 import { UserFinder } from "../../../../contexts/mooc/users/domain/UserFinder";
@@ -22,7 +22,7 @@ const completer = new UserCourseProgressCompleter(
 		new GenerateUserCourseSuggestionsOnUserCourseProgressCompleted(
 			new UserCourseSuggestionsGenerator(
 				new MySqlUserCourseSuggestionsRepository(mariaDBConnection),
-				new OpenAIChatGPT35CourseSuggestionsGenerator(),
+				new OllamaMistralCourseSuggestionsGenerator(),
 				new InMemoryEventBus([
 					new UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated(
 						new UserCourseSuggestionsUpdater(userFinder, mySqlUserRepository),
