@@ -5,7 +5,7 @@ Content-Type: application/json
 {
 	"courseId": "{{$random.uuid}}",
 	"userId": "5353ef23-e982-4acc-928e-c7cdad92152a",
-	"courseName": "DDD en Java"
+	"courseName": "Modelado del dominio: Repositorios"
 }
 
 ### "Diseño de infraestructura: AWS SQS como cola de mensajería",
