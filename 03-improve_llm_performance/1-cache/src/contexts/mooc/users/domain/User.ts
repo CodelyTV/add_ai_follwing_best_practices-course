@@ -12,7 +12,7 @@ export type UserPrimitives = {
 	email: string;
 	profilePicture: string;
 	status: string;
-	finishedCourses: string[];
+	completedCourses: string[];
 	suggestedCourses: string;
 };
 
@@ -23,7 +23,7 @@ export class User extends AggregateRoot {
 		public email: UserEmail,
 		public readonly profilePicture: UserProfilePicture,
 		public status: UserStatus,
-		public finishedCourses: string[],
+		public completedCourses: string[],
 		public suggestedCourses: string,
 	) {
 		super();
@@ -31,7 +31,7 @@ export class User extends AggregateRoot {
 
 	static create(id: string, name: string, email: string, profilePicture: string): User {
 		const defaultUserStatus = UserStatus.Active;
-		const defaultFinishedCourses: string[] = [];
+		const defaultcompletedCourses: string[] = [];
 		const defaultSuggestedCourses: string = "";
 
 		const user = new User(
@@ -40,7 +40,7 @@ export class User extends AggregateRoot {
 			new UserEmail(email),
 			new UserProfilePicture(profilePicture),
 			defaultUserStatus,
-			defaultFinishedCourses,
+			defaultcompletedCourses,
 			defaultSuggestedCourses,
 		);
 
@@ -56,7 +56,7 @@ export class User extends AggregateRoot {
 			new UserEmail(primitives.email),
 			new UserProfilePicture(primitives.profilePicture),
 			primitives.status as UserStatus,
-			primitives.finishedCourses,
+			primitives.completedCourses,
 			primitives.suggestedCourses,
 		);
 	}
@@ -68,7 +68,7 @@ export class User extends AggregateRoot {
 			email: this.email.value,
 			profilePicture: this.profilePicture.value,
 			status: this.status,
-			finishedCourses: this.finishedCourses,
+			completedCourses: this.completedCourses,
 			suggestedCourses: this.suggestedCourses,
 		};
 	}

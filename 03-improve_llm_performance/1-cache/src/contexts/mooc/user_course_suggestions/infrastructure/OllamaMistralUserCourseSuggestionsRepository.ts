@@ -1,11 +1,12 @@
-/* eslint-disable no-console */
 import { Ollama } from "@langchain/community/llms/ollama";
 import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 
-import { CourseSuggestionsRepository } from "../domain/CourseSuggestionsRepository";
+import { UserCourseSuggestionsRepository } from "../domain/UserCourseSuggestionsRepository";
 
-export class OllamaMistralCourseSuggestionsRepository implements CourseSuggestionsRepository {
+export class OllamaMistralUserCourseSuggestionsRepository
+	implements UserCourseSuggestionsRepository
+{
 	private readonly courses = [
 		"Diseño de infraestructura: AWS SQS como cola de mensajería",
 		"Patrones de Diseño: Criteria",
@@ -24,11 +25,9 @@ export class OllamaMistralCourseSuggestionsRepository implements CourseSuggestio
 		"Crea tu librería en React: Carousel",
 	];
 
-	async byFinishedCourses(finishedCourses: string[]): Promise<string> {
-		console.log("Finished courses:", finishedCourses);
-
+	async byCompletedCourses(completedCourses: string[]): Promise<string> {
 		const chain = RunnableSequence.from([
-			PromptTemplate.fromTemplate(`{finishedCourses}`),
+			PromptTemplate.fromTemplate(`{completedCourses}`),
 			SystemMessagePromptTemplate.fromTemplate(
 				`* Actúas como un recomendador de cursos avanzado.
                  * Solo debes sugerir cursos de la siguiente lista (IMPORTANTE: no incluyas cursos que no estén en la lista):
@@ -48,7 +47,7 @@ export class OllamaMistralCourseSuggestionsRepository implements CourseSuggestio
 		]);
 
 		return await chain.invoke({
-			finishedCourses: finishedCourses.map((course) => `* ${course}`).join("\n"),
+			completedCourses: completedCourses.map((course) => `* ${course}`).join("\n"),
 		});
 	}
 }

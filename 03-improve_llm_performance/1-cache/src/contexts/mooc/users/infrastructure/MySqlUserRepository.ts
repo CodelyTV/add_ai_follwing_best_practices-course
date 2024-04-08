@@ -1,5 +1,5 @@
 import { MariaDBConnection } from "../../../shared/infrastructure/MariaDBConnection";
-import { CourseSuggestionsRepository } from "../../course_suggestions/domain/CourseSuggestionsRepository";
+import { UserCourseSuggestionsRepository } from "../../user_course_suggestions/domain/UserCourseSuggestionsRepository";
 import { User } from "../domain/User";
 import { UserId } from "../domain/UserId";
 import { UserRepository } from "../domain/UserRepository";
@@ -10,28 +10,28 @@ type DatabaseUser = {
 	email: string;
 	profile_picture: string;
 	status: string;
-	finished_courses: string;
+	completed_courses: string;
 	suggested_courses: string;
 };
 
 export class MySqlUserRepository implements UserRepository {
 	constructor(
 		private readonly connection: MariaDBConnection,
-		private readonly courseSuggestionsRepository: CourseSuggestionsRepository,
+		private readonly suggestionsRepository: UserCourseSuggestionsRepository,
 	) {}
 
 	async save(user: User): Promise<void> {
 		const userPrimitives = user.toPrimitives();
 
 		const query = `
-			INSERT INTO mooc__users (id, name, email, profile_picture, status, finished_courses, suggested_courses)
+			INSERT INTO mooc__users (id, name, email, profile_picture, status, completed_courses, suggested_courses)
 			VALUES (
 				'${userPrimitives.id}',
 				'${userPrimitives.name}',
 				'${userPrimitives.email}',
 				'${userPrimitives.profilePicture}',
 				'${userPrimitives.status}',
-				'${JSON.stringify(userPrimitives.finishedCourses)}',
+				'${JSON.stringify(userPrimitives.completedCourses)}',
 				'${userPrimitives.suggestedCourses}'
 			)
 			ON DUPLICATE KEY UPDATE
@@ -39,7 +39,7 @@ export class MySqlUserRepository implements UserRepository {
 				 email = VALUES(email),
 				 profile_picture = VALUES(profile_picture),
 				 status = VALUES(status),
-				 finished_courses = VALUES(finished_courses),
+				 completed_courses = VALUES(completed_courses),
 				 suggested_courses = VALUES(suggested_courses);
 		`;
 
@@ -48,7 +48,7 @@ export class MySqlUserRepository implements UserRepository {
 
 	async search(id: UserId): Promise<User | null> {
 		const query = `
-			SELECT id, name, email, profile_picture, status, finished_courses, suggested_courses
+			SELECT id, name, email, profile_picture, status, completed_courses, suggested_courses
 			FROM mooc__users
 			WHERE id = '${id.value}';
 		`;
@@ -59,10 +59,10 @@ export class MySqlUserRepository implements UserRepository {
 			return null;
 		}
 
-		const finishedCourses = JSON.parse(result.finished_courses) as string[];
+		const completedCourses = JSON.parse(result.completed_courses) as string[];
 
-		const suggestedCourses = this.hasToSearchSuggestions(result, finishedCourses)
-			? await this.courseSuggestionsRepository.byFinishedCourses(finishedCourses)
+		const suggestedCourses = this.hasToSearchSuggestions(result, completedCourses)
+			? await this.suggestionsRepository.byCompletedCourses(completedCourses)
 			: result.suggested_courses;
 
 		const user = User.fromPrimitives({
@@ -71,26 +71,26 @@ export class MySqlUserRepository implements UserRepository {
 			email: result.email,
 			profilePicture: result.profile_picture,
 			status: result.status,
-			finishedCourses,
+			completedCourses,
 			suggestedCourses,
 		});
 
-		if (this.hasToSearchSuggestions(result, finishedCourses)) {
+		if (this.hasToSearchSuggestions(result, completedCourses)) {
 			await this.save(user);
 		}
 
 		return user;
 	}
 
-	private hasToSearchSuggestions(result: DatabaseUser, finishedCourses: string[]) {
-		return !this.userHasSuggestions(result) && this.userHasAnyCourseFinished(finishedCourses);
+	private hasToSearchSuggestions(result: DatabaseUser, completedCourses: string[]) {
+		return !this.userHasSuggestions(result) && this.userHasAnyCourseCompleted(completedCourses);
 	}
 
 	private userHasSuggestions(result: DatabaseUser): boolean {
 		return result.suggested_courses !== "";
 	}
 
-	private userHasAnyCourseFinished(finishedCourses: string[]): boolean {
-		return finishedCourses.length > 0;
+	private userHasAnyCourseCompleted(completedCourses: string[]): boolean {
+		return completedCourses.length > 0;
 	}
 }
