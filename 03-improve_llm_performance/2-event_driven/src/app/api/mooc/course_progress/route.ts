@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NextResponse } from "next/server";
 
 import { UserCourseProgressCompleter } from "../../../../contexts/mooc/user_course_progress/application/complete/UserCourseProgressCompleter";
@@ -42,7 +43,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
 	await completer.complete(courseId, userId, courseName);
 
-	const users = await userFinder.find(userId);
+	const user = await userFinder.find(userId);
 
-	return NextResponse.json(users.toPrimitives());
+	const primitives = user.toPrimitives();
+
+	return NextResponse.json({
+		name: primitives.name,
+		suggestedCourses: JSON.parse(primitives.suggestedCourses),
+	});
 }

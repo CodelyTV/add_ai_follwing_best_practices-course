@@ -1,17 +1,18 @@
 import { AggregateRoot } from "../../../shared/domain/AggregateRoot";
+import { CourseSuggestion, CourseSuggestionPrimitives } from "./CourseSuggestion";
 import { UserCourseSuggestionsGenerated } from "./UserCourseSuggestionsGenerated";
 
 export type UserCourseSuggestionsPrimitives = {
 	userId: string;
 	completedCourses: string[];
-	suggestions: string;
+	suggestions: CourseSuggestionPrimitives[];
 };
 
 export class UserCourseSuggestions extends AggregateRoot {
 	constructor(
 		public readonly userId: string,
 		public completedCourses: string[],
-		public suggestions: string,
+		public suggestions: CourseSuggestion[],
 	) {
 		super();
 	}
@@ -20,29 +21,34 @@ export class UserCourseSuggestions extends AggregateRoot {
 		return new UserCourseSuggestions(
 			primitives.userId,
 			primitives.completedCourses,
-			primitives.suggestions,
+			primitives.suggestions.map((suggestions) => CourseSuggestion.fromPrimitives(suggestions)),
 		);
 	}
 
 	static create(userId: string): UserCourseSuggestions {
-		return new UserCourseSuggestions(userId, [], "");
+		return new UserCourseSuggestions(userId, [], []);
 	}
 
 	addCompletedCourse(courseName: string): void {
 		this.completedCourses.push(courseName);
 	}
 
-	updateSuggestions(suggestions: string): void {
+	updateSuggestions(suggestions: CourseSuggestion[]): void {
 		this.suggestions = suggestions;
 
-		this.record(new UserCourseSuggestionsGenerated(this.userId, suggestions));
+		this.record(
+			new UserCourseSuggestionsGenerated(
+				this.userId,
+				JSON.stringify(suggestions.map((suggestion) => suggestion.toPrimitives())),
+			),
+		);
 	}
 
 	toPrimitives(): UserCourseSuggestionsPrimitives {
 		return {
 			userId: this.userId,
 			completedCourses: this.completedCourses,
-			suggestions: this.suggestions,
+			suggestions: this.suggestions.map((suggestion) => suggestion.toPrimitives()),
 		};
 	}
 

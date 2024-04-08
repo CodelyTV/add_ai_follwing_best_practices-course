@@ -5,6 +5,7 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { OpenAI } from "@langchain/openai";
 import { z } from "zod";
 
+import { CourseSuggestion } from "../domain/CourseSuggestion";
 import { CourseSuggestionsGenerator } from "../domain/CourseSuggestionsGenerator";
 import { UserCourseSuggestions } from "../domain/UserCourseSuggestions";
 
@@ -27,7 +28,7 @@ export class OpenAIChatGPT35CourseSuggestionsGenerator implements CourseSuggesti
 		"Crea tu librería en React: Carousel",
 	];
 
-	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<string> {
+	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<CourseSuggestion[]> {
 		const outputParser = StructuredOutputParser.fromZodSchema(
 			z.array(
 				z.object({
@@ -66,8 +67,8 @@ export class OpenAIChatGPT35CourseSuggestionsGenerator implements CourseSuggesti
 			format_instructions: outputParser.getFormatInstructions(),
 		});
 
-		console.log(suggestions);
-
-		return JSON.stringify(suggestions);
+		return suggestions.map(
+			(suggestion) => new CourseSuggestion(suggestion.suggestedCourse, suggestion.reason),
+		);
 	}
 }

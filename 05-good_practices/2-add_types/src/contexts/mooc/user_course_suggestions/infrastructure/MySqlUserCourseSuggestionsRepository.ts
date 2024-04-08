@@ -1,5 +1,6 @@
 import { MariaDBConnection } from "../../../shared/infrastructure/MariaDBConnection";
 import { UserId } from "../../users/domain/UserId";
+import { CourseSuggestion, CourseSuggestionPrimitives } from "../domain/CourseSuggestion";
 import { UserCourseSuggestions } from "../domain/UserCourseSuggestions";
 import { UserCourseSuggestionsRepository } from "../domain/UserCourseSuggestionsRepository";
 
@@ -20,7 +21,7 @@ export class MySqlUserCourseSuggestionsRepository implements UserCourseSuggestio
 			VALUES (
 				'${primitives.userId}',
 				'${JSON.stringify(primitives.completedCourses)}',
-				'${primitives.suggestions}'
+				'${JSON.stringify(primitives.suggestions)}'
 			)
 			ON DUPLICATE KEY UPDATE
 				user_id = VALUES(user_id),
@@ -45,11 +46,12 @@ export class MySqlUserCourseSuggestionsRepository implements UserCourseSuggestio
 		}
 
 		const completedCourses = JSON.parse(result.completed_courses) as string[];
+		const suggestions = JSON.parse(result.suggested_courses) as CourseSuggestionPrimitives[];
 
 		return UserCourseSuggestions.fromPrimitives({
 			userId: result.user_id,
 			completedCourses,
-			suggestions: result.suggested_courses,
+			suggestions: suggestions.map((primitives) => CourseSuggestion.fromPrimitives(primitives)),
 		});
 	}
 }
