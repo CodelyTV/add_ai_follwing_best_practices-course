@@ -1,5 +1,5 @@
 import { MariaDBConnection } from "../../../shared/infrastructure/MariaDBConnection";
-import { CoursesSuggestionLlm } from "../domain/CoursesSuggestionLlm";
+import { CourseSuggestionsRepository } from "../../course_suggestions/domain/CourseSuggestionsRepository";
 import { User } from "../domain/User";
 import { UserId } from "../domain/UserId";
 import { UserRepository } from "../domain/UserRepository";
@@ -16,7 +16,7 @@ type DatabaseUser = {
 export class MySqlUserRepository implements UserRepository {
 	constructor(
 		private readonly connection: MariaDBConnection,
-		private readonly coursesSuggestionLlm: CoursesSuggestionLlm,
+		private readonly courseSuggestionsRepository: CourseSuggestionsRepository,
 	) {}
 
 	async save(user: User): Promise<void> {
@@ -50,10 +50,9 @@ export class MySqlUserRepository implements UserRepository {
 		}
 
 		const finishedCourses = JSON.parse(result.finished_courses) as string[];
-		const recommendedCourses =
-			finishedCourses.length > 0 ? await this.coursesSuggestionLlm.predict(finishedCourses) : "";
-
-		console.log(recommendedCourses);
+		const recommendedCourses = this.userHasAnyCourseFinished(finishedCourses)
+			? await this.courseSuggestionsRepository.byFinishedCourses(finishedCourses)
+			: "";
 
 		return User.fromPrimitives({
 			id: result.id,
@@ -64,5 +63,9 @@ export class MySqlUserRepository implements UserRepository {
 			finishedCourses,
 			recommendedCourses,
 		});
+	}
+
+	private userHasAnyCourseFinished(finishedCourses: string[]): boolean {
+		return finishedCourses.length > 0;
 	}
 }
