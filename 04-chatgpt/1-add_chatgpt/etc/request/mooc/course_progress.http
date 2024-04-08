@@ -1,0 +1,25 @@
+### Complete a course and get the user
+POST http://localhost:3000/api/mooc/course_progress
+Content-Type: application/json
+
+{
+	"courseId": "{{$random.uuid}}",
+	"userId": "5353ef23-e982-4acc-928e-c7cdad92152a",
+	"courseName": "DDD en PHP"
+}
+
+### "Diseño de infraestructura: AWS SQS como cola de mensajería",
+### "Patrones de Diseño: Criteria",
+### "Diseño de infraestructura: RabbitMQ como cola de mensajería",
+### "Diseño de infraestructura: Mapeo de herencia en PHP",
+### "Next.js: Open Graph Images",
+### "Problemas con DDD: Gestión de errores en Eventos de Domino",
+### "Linting en PHP",
+### "Modelado del Dominio: Eventos de Dominio",
+### "Análisis de código estático en PHP",
+### "Modelado del dominio: Agregados",
+### "Buenas prácticas con CSS: Colores",
+### "TypeScript Avanzado: Mejora tu Developer eXperience",
+### "Grafana",
+### "Modelado del dominio: Repositorios",
+### "Crea tu librería en React: Carousel",
