@@ -1,5 +1,5 @@
 services:
-  05_3_ia_good_practices_mariadb:
+  06_1_ia_good_practices_mariadb:
     image: mariadb:11
     restart: always
     environment:
