@@ -14,6 +14,7 @@ export class UserRegisteredDomainEventMother {
 			email: UserEmailMother.create().value,
 			profilePicture: UserProfilePictureMother.create().value,
 			status: UserStatus.Active,
+			suggestedCourses: "",
 			...params,
 		};
 

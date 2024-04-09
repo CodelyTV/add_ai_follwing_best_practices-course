@@ -1,5 +1,5 @@
 services:
-  06_1_ia_good_practices_mariadb:
+  06_2_ia_good_practices_mariadb:
     image: mariadb:11
     restart: always
     environment:
@@ -14,6 +14,12 @@ services:
       - db_data:/var/lib/mysql
       - ./databases/codely.sql:/docker-entrypoint-initdb.d/init.sql
 
+  06_2_ia_good_practices_ollama:
+    image: ollama/ollama
+    volumes:
+      - ~/.ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+
 volumes:
   db_data:
-  redis_data:

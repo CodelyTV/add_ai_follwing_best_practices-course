@@ -1,14 +1,14 @@
 import {
-	CourseProgressCompletedDomainEvent,
 	CourseProgressCompletedDomainEventPrimitives,
-} from "../../../../../src/contexts/mooc/courses_progress/domain/CourseProgressCompletedDomainEvent";
+	UserCourseProgressCompletedDomainEvent,
+} from "../../../../../src/contexts/mooc/user_course_progress/domain/UserCourseProgressCompletedDomainEvent";
 import { UserIdMother } from "../../users/domain/UserIdMother";
 import { UserNameMother } from "../../users/domain/UserNameMother";
 
 export class CourseProgressCompletedDomainEventMother {
 	static create(
 		params?: Partial<CourseProgressCompletedDomainEventPrimitives>,
-	): CourseProgressCompletedDomainEvent {
+	): UserCourseProgressCompletedDomainEvent {
 		const primitives: CourseProgressCompletedDomainEventPrimitives = {
 			id: UserIdMother.create().value,
 			courseName: UserNameMother.create().value,
@@ -16,7 +16,7 @@ export class CourseProgressCompletedDomainEventMother {
 			...params,
 		};
 
-		return new CourseProgressCompletedDomainEvent(
+		return new UserCourseProgressCompletedDomainEvent(
 			primitives.id,
 			primitives.courseName,
 			primitives.userId,
