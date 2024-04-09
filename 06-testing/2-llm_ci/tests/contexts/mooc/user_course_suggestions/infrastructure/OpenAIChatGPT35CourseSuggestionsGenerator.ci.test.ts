@@ -41,7 +41,7 @@ describe("OpenAIChatGPT35CourseSuggestionsGenerator should", () => {
 			criteria: "relevance",
 			llm: new OpenAI({
 				modelName: "gpt-3.5-turbo-0125",
-				openAIApiKey: "sk-youSecretKey",
+				openAIApiKey: process.env.OPENAI_API_KEY,
 			}),
 		});
 

@@ -43,7 +43,7 @@ export class OpenAIChatGPT35CourseSuggestionsGenerator implements CourseSuggesti
 			),
 			new OpenAI({
 				modelName: "gpt-3.5-turbo-0125",
-				openAIApiKey: "sk-clavemuysecreta",
+				openAIApiKey: process.env.OPENAI_API_KEY,
 			}),
 		]);
 
