@@ -1,5 +1,5 @@
 import { Ollama } from "@langchain/community/llms/ollama";
-import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/prompts";
+import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 
 import { UserId } from "../../users/domain/UserId";
@@ -20,11 +20,9 @@ export class OllamaMistralUserCourseSuggestionsRepository
 		}
 
 		const chain = RunnableSequence.from([
-			PromptTemplate.fromTemplate(`{completedCourses}`),
-			SystemMessagePromptTemplate.fromTemplate(`* Recomienda cursos similares.`),
+			PromptTemplate.fromTemplate(`Recomienda cursos similares a {completedCourses}`),
 			new Ollama({
 				model: "mistral",
-				temperature: 0,
 			}),
 		]);
 
