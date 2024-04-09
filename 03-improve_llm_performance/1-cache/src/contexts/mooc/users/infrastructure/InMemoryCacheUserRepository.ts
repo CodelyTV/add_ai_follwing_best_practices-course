@@ -3,27 +3,29 @@ import { UserId } from "../domain/UserId";
 import { UserRepository } from "../domain/UserRepository";
 
 export class InMemoryCacheUserRepository implements UserRepository {
-	private readonly users: Map<UserId, User> = new Map();
+	private readonly usersCache: Map<UserId, User> = new Map();
 
 	constructor(private readonly repository: UserRepository) {}
 
 	async save(user: User): Promise<void> {
 		await this.repository.save(user);
 
-		this.users.set(user.id, user);
+		this.usersCache.set(user.id, user);
 	}
 
 	async search(id: UserId): Promise<User | null> {
-		const user = this.users.get(id);
-		if (!user) {
-			const user = await this.repository.search(id);
-			if (user) {
-				this.users.set(id, user);
-			}
+		const userFromCache = this.usersCache.get(id);
 
-			return user;
+		if (userFromCache) {
+			return userFromCache;
 		}
 
-		return user;
+		const userFromDatabase = await this.repository.search(id);
+
+		if (userFromDatabase) {
+			this.usersCache.set(id, userFromDatabase);
+		}
+
+		return userFromDatabase;
 	}
 }
