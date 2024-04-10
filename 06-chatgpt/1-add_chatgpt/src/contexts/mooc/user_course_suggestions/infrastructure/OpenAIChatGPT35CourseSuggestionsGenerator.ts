@@ -38,7 +38,8 @@ export class OpenAIChatGPT35CourseSuggestionsGenerator implements CourseSuggesti
                  * Los cursos que ya ha completado el usuario son los que te proveerá.
                  * Devuelve los cursos en castellano.
                  * No puedes añadir cursos que el usuario ya ha completado.
-                 * No añadas ningún titular, devuelve sólo los nombres de los cursos.,
+                 * No añadas ningún titular, devuelve sólo los nombres de los cursos.
+                 * Si el usuario sólo ha hecho cursos de backend, no le recomiendes cursos de frontend y viceversa.
                  * Devuelve sólo los nombres de los cursos, sin añadir información adicional.`,
 			),
 			new OpenAI({
