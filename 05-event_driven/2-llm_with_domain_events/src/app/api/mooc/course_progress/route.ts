@@ -49,6 +49,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
 	return NextResponse.json({
 		name: primitives.name,
-		suggestedCourses: JSON.parse(primitives.suggestedCourses),
+		suggestedCourses: primitives.suggestedCourses,
 	});
 }
