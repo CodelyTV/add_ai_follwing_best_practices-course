@@ -1,5 +1,5 @@
 services:
-  02_2_ia_good_practices_mariadb:
+  04_1_ia_good_practices_mariadb:
     image: mariadb:11
     restart: always
     environment:
@@ -16,4 +16,3 @@ services:
 
 volumes:
   db_data:
-  redis_data:
