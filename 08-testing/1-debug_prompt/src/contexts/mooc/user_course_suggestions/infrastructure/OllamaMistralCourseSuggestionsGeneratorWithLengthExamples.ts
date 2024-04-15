@@ -34,7 +34,7 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 ${this.formatCodelyCourses(this.existingCodelyCourses)}
 
 Cumple con las siguientes reglas:
-* IMPORTANTE: Devuelve 3 cursos, ni más, ni menos.
+* Devuelve 3 cursos, ni más, ni menos.
 * Devuelve sólo el título del curso.
 * Devuelve sólo la lista de cursos, sin añadir información adicional.
 * No añadas una introducción ni un mensaje de bienvenida.
@@ -88,7 +88,7 @@ Dame las sugerencias para los siguientes cursos:`;
 			prefix,
 			examplePrompt,
 			exampleSelector,
-			suffix: "{completed_courses}\n\t- ",
+			suffix: "{completed_courses}",
 			inputVariables: ["completed_courses"],
 		});
 
