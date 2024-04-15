@@ -40,18 +40,24 @@ export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestion
 
 		const chain = RunnableSequence.from([
 			PromptTemplate.fromTemplate(
-				`* Actúas como un recomendador de cursos avanzado.
-                 * Solo debes sugerir cursos de la siguiente lista (IMPORTANTE: no incluyas cursos que no estén en la lista):
-                 ${this.existingCodelyCourses.map((course) => `\t- ${course}`).join("\n")}
-                 * Devuelve una lista con los 3 cursos recomendados.
-                 * No puedes añadir cursos que el usuario ya ha completado.
-                 * Añade también el motivo de la sugerencia (IMPORTANTE: Ha de ser en castellano)
-                 * Ejemplo de respuesta de la razón de la sugerencia: "Porque haciendo el curso de DDD en PHP has demostrado interés en PHP".
-                 * Devuelve sólo la lista de cursos con sus razones, sin añadir información adicional.
-                 * Siempre respondes utilizando el siguiente JSON Schema (importante que las claves de "suggestedCourse" y "reason" van entre comillas dobles):
-                 {format_instructions}
-                 * Los cursos completados por el usuario son:
-                 {completed_courses}`,
+				`Dado que ofrecemos estos cursos
+${this.existingCodelyCourses.map((course) => `\t- ${course}`).join("\n")}
+
+Y que tienes que seguir estas reglas:
+	- Actúas como un recomendador de cursos avanzado.
+	- Solo debes sugerir cursos de la siguiente lista (IMPORTANTE: no incluyas cursos que no estén en la lista):
+	- Devuelve una lista con los 3 cursos recomendados.
+	- No puedes añadir cursos que el usuario ya ha completado.
+	- Añade también el motivo de la sugerencia (IMPORTANTE: Ha de ser en castellano)
+	- Ejemplo de respuesta de la razón de la sugerencia: "Porque haciendo el curso de DDD en PHP has demostrado interés en PHP".
+	- Devuelve sólo la lista de cursos con sus razones, sin añadir información adicional.
+	- Devuelves cada curso y su razón por separado.
+	- Siempre respondes utilizando el siguiente JSON Schema (importante que las claves de "suggestedCourse" y "reason" van entre comillas dobles):
+
+{format_instructions}
+	 
+Sugiéreme 3 cursos para alguien que ha completado los siguientes:
+{completed_courses}`,
 			),
 			new Ollama({
 				model: "mistral",
@@ -62,7 +68,7 @@ export class OllamaMistralCourseSuggestionsGenerator implements CourseSuggestion
 
 		const suggestions = await chain.invoke({
 			completed_courses: userCourseSuggestions.completedCourses
-				.map((course) => `* ${course}`)
+				.map((course) => `\t- ${course}`)
 				.join("\n"),
 			format_instructions: outputParser.getFormatInstructions(),
 		});
