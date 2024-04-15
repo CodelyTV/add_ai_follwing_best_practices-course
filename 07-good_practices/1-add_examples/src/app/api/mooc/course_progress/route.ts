@@ -5,7 +5,7 @@ import { UserCourseProgressCompleter } from "../../../../contexts/mooc/user_cour
 import { GenerateUserCourseSuggestionsOnUserCourseProgressCompleted } from "../../../../contexts/mooc/user_course_suggestions/application/generate/GenerateUserCourseSuggestionsOnUserCourseProgressCompleted";
 import { UserCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/application/generate/UserCourseSuggestionsGenerator";
 import { MySqlUserCourseSuggestionsRepository } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/MySqlUserCourseSuggestionsRepository";
-import { OllamaMistralCourseSuggestionsGenerator } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/OllamaMistralCourseSuggestionsGenerator";
+import { OllamaMistralCourseSuggestionsGeneratorWithLengthExamples } from "../../../../contexts/mooc/user_course_suggestions/infrastructure/OllamaMistralCourseSuggestionsGeneratorWithLengthExamples";
 import { UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated } from "../../../../contexts/mooc/users/application/update_course_suggestions/UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated";
 import { UserCourseSuggestionsUpdater } from "../../../../contexts/mooc/users/application/update_course_suggestions/UserCourseSuggestionsUpdater";
 import { UserFinder } from "../../../../contexts/mooc/users/domain/UserFinder";
@@ -23,7 +23,7 @@ const completer = new UserCourseProgressCompleter(
 		new GenerateUserCourseSuggestionsOnUserCourseProgressCompleted(
 			new UserCourseSuggestionsGenerator(
 				new MySqlUserCourseSuggestionsRepository(mariaDBConnection),
-				new OllamaMistralCourseSuggestionsGenerator(),
+				new OllamaMistralCourseSuggestionsGeneratorWithLengthExamples(),
 				new InMemoryEventBus([
 					new UpdateUserCourseSuggestionsOnUserCourseSuggestionsGenerated(
 						new UserCourseSuggestionsUpdater(userFinder, mySqlUserRepository),
@@ -49,6 +49,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
 	return NextResponse.json({
 		name: primitives.name,
-		suggestedCourses: JSON.parse(primitives.suggestedCourses),
+		suggestedCourses: primitives.suggestedCourses,
 	});
 }

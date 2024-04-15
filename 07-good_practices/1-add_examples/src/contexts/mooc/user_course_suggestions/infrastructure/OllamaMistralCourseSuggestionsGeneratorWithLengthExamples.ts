@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { Ollama } from "@langchain/community/llms/ollama";
 import { LengthBasedExampleSelector } from "@langchain/core/example_selectors";
+import { Serialized } from "@langchain/core/load/serializable";
+import { LLMResult } from "@langchain/core/outputs";
 import { FewShotPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
 
 import { CourseSuggestionsGenerator } from "../domain/CourseSuggestionsGenerator";
@@ -27,12 +29,16 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 		"Crea tu librería en React: Carousel",
 	];
 
-	formatCoursesList(courses: string[]): string {
+	formatCodelyCourses(courses: string[]): string {
 		return courses.map((course) => `\t- ${course}`).join("\n");
 	}
 
+	formatExampleCourses(courses: string[]): string {
+		return `${courses.map((course) => `\t- ${course}`).join("\n")}\n---`;
+	}
+
 	formatCoursesInline(courses: string[]): string {
-		return courses.join(", ");
+		return `---\n${courses.join(", ")}`;
 	}
 
 	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<string> {
@@ -45,7 +51,7 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 			[
 				{
 					completed_courses: this.formatCoursesInline(["Modelado del Dominio: Eventos de Dominio"]),
-					suggested_courses: this.formatCoursesList([
+					suggested_courses: this.formatExampleCourses([
 						"Modelado del dominio: Agregados",
 						"Modelado del dominio: Repositorios",
 						"Patrones de Diseño: Criteria",
@@ -56,7 +62,7 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 						"Linting en PHP",
 						"Diseño de infraestructura: Mapeo de herencia en PHP",
 					]),
-					suggested_courses: this.formatCoursesList([
+					suggested_courses: this.formatExampleCourses([
 						"Análisis de código estático en PHP",
 						"Diseño de infraestructura: AWS SQS como cola de mensajería",
 						"Diseño de infraestructura: RabbitMQ como cola de mensajería",
@@ -64,7 +70,7 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 				},
 				{
 					completed_courses: this.formatCoursesInline(["Next.js: Open Graph Images"]),
-					suggested_courses: this.formatCoursesList([
+					suggested_courses: this.formatExampleCourses([
 						"Crea tu librería en React: Carousel",
 						"Buenas prácticas con CSS: Colores",
 						"TypeScript Avanzado: Mejora tu Developer eXperience",
@@ -78,37 +84,44 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 		);
 
 		const dynamicPrompt = new FewShotPromptTemplate({
-			exampleSelector,
-			examplePrompt,
-			prefix: `Dado un curso de entrada, sugiere tres cursos relevantes de la siguiente lista (IMPORTANTE devuelve sólo los títulos de los cursos):
+			prefix: `Dado unos curso de entrada, sugiere tres cursos relevantes de la siguiente lista (IMPORTANTE devuelve sólo los títulos de los cursos):
+${this.formatCodelyCourses(this.existingCodelyCourses)}
 
-${this.formatCoursesList(this.existingCodelyCourses)}
-
-Aquí algunos ejemplos de cursos y sus recomendaciones:
-`,
-			suffix: `Cumple con las siguientes reglas:
-* Devuelve 3 cursos, ni más, ni menos.
+Cumple con las siguientes reglas:
+* IMPORTANTE: Devuelve 3 cursos, ni más, ni menos.
 * Devuelve sólo el título del curso.
 * Devuelve sólo la lista de cursos, sin añadir información adicional.
 * No añadas una introducción ni un mensaje de bienvenida.
 * No me digas por qué has escogido los cursos. Solo quiero la lista de cursos.
-* Dame las sugerencias para el siguiente curso:
+* Mo modifiques los títulos de los cursos.
 
-{completed_courses}
-`,
+Dame las sugerencias para los siguientes cursos:`,
+			examplePrompt,
+			exampleSelector,
+			suffix: "{completed_courses}\n\t- ",
 			inputVariables: ["completed_courses"],
 		});
 
 		const model = new Ollama({
 			model: "mistral",
 			temperature: 0,
+			callbacks: [
+				{
+					handleLLMStart: (_llm: Serialized, prompts: string[]) => {
+						console.log("-- PROMPT --\n");
+						console.log(prompts[0]);
+					},
+					handleLLMEnd: (output: LLMResult) => {
+						console.log("\n\n-- RESULT --\n");
+						console.log(output.generations[0][0].text);
+					},
+				},
+			],
 		});
 
 		const prompt = await dynamicPrompt.format({
 			completed_courses: this.formatCoursesInline(userCourseSuggestions.completedCourses),
 		});
-
-		console.log(prompt);
 
 		return await model.invoke(prompt);
 	}
