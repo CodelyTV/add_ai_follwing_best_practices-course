@@ -29,19 +29,20 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 		"Crea tu librería en React: Carousel",
 	];
 
-	formatCodelyCourses(courses: string[]): string {
-		return courses.map((course) => `\t- ${course}`).join("\n");
-	}
-
-	formatExampleCourses(courses: string[]): string {
-		return `${courses.map((course) => `\t- ${course}`).join("\n")}\n---`;
-	}
-
-	formatCoursesInline(courses: string[]): string {
-		return `---\n${courses.join(", ")}`;
-	}
-
 	async generate(userCourseSuggestions: UserCourseSuggestions): Promise<string> {
+		const prefix = `Dado unos curso de entrada, sugiere tres cursos relevantes de la siguiente lista (IMPORTANTE devuelve sólo los títulos de los cursos):
+${this.formatCodelyCourses(this.existingCodelyCourses)}
+
+Cumple con las siguientes reglas:
+* IMPORTANTE: Devuelve 3 cursos, ni más, ni menos.
+* Devuelve sólo el título del curso.
+* Devuelve sólo la lista de cursos, sin añadir información adicional.
+* No añadas una introducción ni un mensaje de bienvenida.
+* No me digas por qué has escogido los cursos. Solo quiero la lista de cursos.
+* Mo modifiques los títulos de los cursos.
+
+Dame las sugerencias para los siguientes cursos:`;
+
 		const examplePrompt = new PromptTemplate({
 			inputVariables: ["completed_courses", "suggested_courses"],
 			template: "{completed_courses}\n{suggested_courses}",
@@ -84,25 +85,18 @@ export class OllamaMistralCourseSuggestionsGeneratorWithLengthExamples
 		);
 
 		const dynamicPrompt = new FewShotPromptTemplate({
-			prefix: `Dado unos curso de entrada, sugiere tres cursos relevantes de la siguiente lista (IMPORTANTE devuelve sólo los títulos de los cursos):
-${this.formatCodelyCourses(this.existingCodelyCourses)}
-
-Cumple con las siguientes reglas:
-* IMPORTANTE: Devuelve 3 cursos, ni más, ni menos.
-* Devuelve sólo el título del curso.
-* Devuelve sólo la lista de cursos, sin añadir información adicional.
-* No añadas una introducción ni un mensaje de bienvenida.
-* No me digas por qué has escogido los cursos. Solo quiero la lista de cursos.
-* Mo modifiques los títulos de los cursos.
-
-Dame las sugerencias para los siguientes cursos:`,
+			prefix,
 			examplePrompt,
 			exampleSelector,
 			suffix: "{completed_courses}\n\t- ",
 			inputVariables: ["completed_courses"],
 		});
 
-		const model = new Ollama({
+		const prompt = await dynamicPrompt.format({
+			completed_courses: this.formatCoursesInline(userCourseSuggestions.completedCourses),
+		});
+
+		return await new Ollama({
 			model: "mistral",
 			temperature: 0,
 			callbacks: [
@@ -117,12 +111,18 @@ Dame las sugerencias para los siguientes cursos:`,
 					},
 				},
 			],
-		});
+		}).invoke(prompt);
+	}
 
-		const prompt = await dynamicPrompt.format({
-			completed_courses: this.formatCoursesInline(userCourseSuggestions.completedCourses),
-		});
+	private formatCodelyCourses(courses: string[]): string {
+		return courses.map((course) => `\t- ${course}`).join("\n");
+	}
 
-		return await model.invoke(prompt);
+	private formatExampleCourses(courses: string[]): string {
+		return `${courses.map((course) => `\t- ${course}`).join("\n")}\n---`;
+	}
+
+	private formatCoursesInline(courses: string[]): string {
+		return `---\n${courses.join(", ")}`;
 	}
 }
