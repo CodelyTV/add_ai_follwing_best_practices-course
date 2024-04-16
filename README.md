@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">
-    {COURSE_EMOJI} {COURSE_NAME_IN_ENGLISH}
+    🦙 Add Artificial Intelligence following best practices (OpenAI GPT, Ollama y LangChain)
 </h1>
 
 <p align="center">
@@ -14,10 +14,10 @@
 </p>
 
 <p align="center">
-    {COURSE_SUMMARY_IN_ENGLISH}
+    Add AI following a clean architectura and good practices.
 </p>
 
 <p align="center">
-  <a href="https://github.com/CodelyTV/{REPOSITORY_NAME}/stargazers">Stars are welcome 😊</a><br><br>
-  Course (Spanish): <a href="{COURSE_URL}">{COURSE_NAME_IN_SPANISH}</a>
+  <a href="https://github.com/CodelyTV/add_ai_follwing_best_practices-course/stargazers">Stars are welcome 😊</a><br><br>
+  Course (Spanish): <a href="https://pro.codely.com/library/anade-inteligencia-artificial-siguiendo-buenas-practicas-openai-gpt-ollama-y-langchain-222393">Añade Inteligencia Artificial siguiendo buenas prácticas</a>
 </p>
